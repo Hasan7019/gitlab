@@ -6,19 +6,19 @@ CREATE TABLE STAFF_DETAILS (
     staff_id int NOT NULL UNIQUE,
     fname varchar(50) NOT NULL,
     lname varchar(50) NOT NULL,
-    dept varchar(50) NOT NULL
+    dept varchar(50) NOT NULL,
     email varchar(50) NOT NULL,
     phone varchar(20) NOT NULL,
     biz_address varchar(255) NOT NULL,
     sys_role ENUM('staff', 'hr', 'manager', 'inactive'),
-    PRIMARY KEY staff_id
+    PRIMARY KEY (staff_id)
 );
 
 INSERT INTO STAFF_DETAILS VALUES
 (123456789, 'AH GAO', 'TAN', 'FINANCE', 'tan_ah_gao@all-in-one.com.sg', '65-1234-5678', 'address1', 'staff'),
 (123456788, 'VINCENT REX', 'COLINS', 'HUMAN RESOURCE AND ADMIN', 'colins_email@email.com.sg', '65-1234-5679', 'address2','hr'),
 (123456787, 'FAUD', 'NIZAM', 'SALES', 'faud_email@email.com.sg', '60-1234-5678', 'address3', 'manager'),
-(123456786, 'JOHN', 'DOE', 'IT', 'john_email@email.com.sg', '69-6969696969', 'address4', 'inactive')
+(123456786, 'JOHN', 'DOE', 'IT', 'john_email@email.com.sg', '69-6969696969', 'address4', 'inactive'),
 (1, 'BOSS', 'PERSON', 'HEAD OFFICE', 'boss@email.com.sg', '42-0420-4204', 'bossaddress', 'manager');
 
 DROP TABLE IF EXISTS STAFF_REPORTING_OFFICER;
@@ -48,8 +48,8 @@ CREATE TABLE ROLE_DETAILS (
     role_name varchar(50) NOT NULL,
     role_description varchar(50000) NOT NULL,
     role_status ENUM('active', 'inactive'),
-    PRIMARY KEY role_id
-)
+    PRIMARY KEY (role_id)
+);
 
 INSERT INTO ROLE_DETAILS VALUES
 (234567891, 'Head, Talent Attraction', "The Head, Talent Attraction is responsible for strategic workforce planning to support the organisation's growth strategies through establishing talent sourcing strategies, determining the philosophy for the selection and securing of candidates and overseeing the onboarding and integration of new hires into the organisation. He/She develops various approaches to meet workforce requirements and designs employer branding strategies. He oversees the selection processes and collaborates with business stakeholders for the hiring of key leadership roles. As a department head, he is responsible for setting the direction and articulating goals and objectives for the team, and driving the integration of Skills Frameworks across the organisation's talent attraction plans.
@@ -67,14 +67,14 @@ He works in multiple different environments, including different learning venues
 
 DROP TABLE IF EXISTS STAFF_ROLES;
 CREATE TABLE STAFF_ROLES (
-    staff_id int UNIQUE NOT NULL,
-    staff_role int NULL,
+    staff_id int NOT NULL,
+    staff_role int NOT NULL,
     role_type ENUM('primary', 'secondary'),
     sr_status ENUM('active', 'inactive'),
-    PRIMARY KEY staff_id,
+    PRIMARY KEY (staff_id, staff_role),
     FOREIGN KEY (staff_role) REFERENCES ROLE_DETAILS(role_id)
-    ON DELETE SET NULL
-)
+    ON DELETE CASCADE
+);
 
 INSERT INTO STAFF_ROLES VALUES 
 (123456789, 234567891, 'primary', 'active'),
@@ -86,8 +86,8 @@ CREATE TABLE SKILL_DETAILS (
     skill_id int NOT NULL,
     skill_name varchar(50) NOT NULL,
     skill_status ENUM('active', 'inactive'),
-    PRIMARY KEY skill_id
-)
+    PRIMARY KEY (skill_id)
+);
 
 INSERT INTO SKILL_DETAILS VALUES 
 (345678912, 'Pascal Programming', 'inactive'),
@@ -101,10 +101,10 @@ DROP TABLE IF EXISTS STAFF_SKILLS;
 CREATE TABLE STAFF_SKILLS (
     staff_id int NOT NULL,
     skill_id int NOT NULL,
-    ss_status ENUM('active', 'unverified', 'in-progress'),
+    ss_status ENUM('active', 'inactive', 'unverified', 'in-progress'),
     FOREIGN KEY (skill_id) REFERENCES SKILL_DETAILS(skill_id) ON DELETE CASCADE,
     PRIMARY KEY (staff_id, skill_id)
-)
+);
 
 INSERT INTO STAFF_SKILLS VALUES
 (123456789, 345678913, 'active'),
@@ -112,19 +112,16 @@ INSERT INTO STAFF_SKILLS VALUES
 (123456789, 345678969, 'inactive'),
 (123456789, 345678970, 'in-progress');
 
-DROP TABLE IF EXISTS ROLE_SKILLS
+DROP TABLE IF EXISTS ROLE_SKILLS;
 CREATE TABLE ROLE_SKILLS (
     role_id int NOT NULL,
     skill_id int NOT NULL,
     PRIMARY KEY (role_id, skill_id),
     FOREIGN KEY (role_id) REFERENCES ROLE_DETAILS(role_id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES SKILL_DETAILS(skill_id) ON DELETE CASCADE
-)
+);
 
 INSERT INTO ROLE_SKILLS VALUES
 (234567893, 345678914),
 (234567891, 345678970),
 (234567894, 345678971);
-
-
-
