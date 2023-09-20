@@ -1,5 +1,9 @@
-CREATE DATABASE IF NOT EXISTS LMS DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE LMS;
+DROP DATABASE IF EXISTS LJPS;
+DROP DATABASE IF EXISTS LMS;
+
+DROP DATABASE IF EXISTS SBRP;
+CREATE DATABASE IF NOT EXISTS SBRP DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE SBRP;
 
 DROP TABLE IF EXISTS STAFF_DETAILS;
 CREATE TABLE STAFF_DETAILS (
@@ -39,8 +43,6 @@ INSERT INTO STAFF_REPORTING_OFFICER VALUES
 (123456789, 123456787),
 (123456788, 1);
 
-CREATE DATABASE IF NOT EXISTS LJPS DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE LJPS;
 
 DROP TABLE IF EXISTS ROLE_DETAILS;
 CREATE TABLE ROLE_DETAILS (
@@ -72,6 +74,8 @@ CREATE TABLE STAFF_ROLES (
     role_type ENUM('primary', 'secondary'),
     sr_status ENUM('active', 'inactive'),
     PRIMARY KEY (staff_id, staff_role),
+    FOREIGN KEY (staff_id) REFERENCES STAFF_DETAILS(staff_id)
+    ON DELETE CASCADE,
     FOREIGN KEY (staff_role) REFERENCES ROLE_DETAILS(role_id)
     ON DELETE CASCADE
 );
@@ -102,6 +106,7 @@ CREATE TABLE STAFF_SKILLS (
     staff_id int NOT NULL,
     skill_id int NOT NULL,
     ss_status ENUM('active', 'inactive', 'unverified', 'in-progress'),
+    FOREIGN KEY (staff_id) REFERENCES STAFF_DETAILS(staff_id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES SKILL_DETAILS(skill_id) ON DELETE CASCADE,
     PRIMARY KEY (staff_id, skill_id)
 );
@@ -125,3 +130,40 @@ INSERT INTO ROLE_SKILLS VALUES
 (234567893, 345678914),
 (234567891, 345678970),
 (234567894, 345678971);
+
+DROP TABLE IF EXISTS ROLE_LISTINGS;
+CREATE TABLE ROLE_LISTINGS (
+    role_listing_id int UNIQUE,
+    role_id int,
+    role_listing_desc varchar(5000),
+    role_listing_source int,
+    role_listing_open DATE,
+    role_listing_close DATE NULL,
+    role_listing_creator int,
+    role_listing_ts_create DATE,
+    role_listing_updater int,
+    role_listing_ts_update DATE,
+    PRIMARY KEY (role_listing_id),
+    FOREIGN KEY (role_id) REFERENCES ROLE_DETAILS(role_id)
+    ON DELETE SET NULL,
+    FOREIGN KEY (role_listing_source) REFERENCES STAFF_DETAILS(staff_id)
+    ON DELETE SET NULL,
+    FOREIGN KEY (role_listing_creator) REFERENCES STAFF_DETAILS(staff_id)
+    ON DELETE SET NULL,
+    FOREIGN KEY (role_listing_updater) REFERENCES STAFF_DETAILS(staff_id)
+    ON DELETE SET NULL
+);
+
+DROP TABLE IF EXISTS ROLE_APPLICATIONS;
+CREATE TABLE ROLE_APPLICATIONS (
+    role_app_id int,
+    role_listing_id int,
+    staff_id int,
+    role_app_status ENUM('applied', 'withdrawn'),
+    role_app_ts_create DATE,
+    PRIMARY KEY (role_app_id),
+    FOREIGN KEY (role_listing_id) REFERENCES ROLE_LISTINGS(role_listing_id)
+    ON DELETE CASCADE,
+    FOREIGN KEY (staff_id) REFERENCES STAFF_DETAILS(staff_id)
+    ON DELETE CASCADE
+);
