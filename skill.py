@@ -1,112 +1,102 @@
-# {
-#     skillId1: {
-#         skillName1: name,
-#         employees: [
-#             empId1,
-#             empId2,
-#             empId3
-#         ]
-#     },
-#     skillId2: {
-#         skillName2: name,
-#         employees: [
-#             empId1,
-#             empId2,
-#             empId3
-#         ]
-#     }
-# }
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Enum
+from flask_cors import CORS
+from dotenv import load_dotenv
+from os import environ
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
-import firebase_admin
-from firebase_admin import firestore, credentials, initialize_app
+from role import Role_skill
+from staff import Skills
+load_dotenv()
 
 app = Flask(__name__)
 
-cred = credentials.Certificate("key.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+db = SQLAlchemy(app)
 
-@app.route('/skills', methods=['POST'])
-def add_skill():
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'Please provide data for the new skill'}), 400
-    
-    doc_ref = db.collection('skills').document()
-    doc_ref.set(data)
-    return jsonify({'message': 'Skill successfully added', 'id': doc_ref.id}), 201
+class Skill(db.Model):
+    __tablename__ = 'SKILL_DETAILS'
 
-@app.route('/skills/<string:skillId>', methods=['DELETE'])
-def delete_skill(skillId):
-    doc_ref = db.collection('skills').document(skillId)
-    if not doc_ref.get().exists:
-        return jsonify({'error': 'Skill not found.'}), 404
-    doc_ref.delete()
-    return jsonify({'message': 'Skill deleted successfully'}), 200
+    skill_id = db.Column(db.Integer, primary_key=True)
+    skill_name = db.Column(db.String(50), nullable=False)
+    skill_status = db.Column(Enum('active', 'inactive'), nullable=False)
 
-@app.route('/skills/<string:skillId>', methods=['PUT'])
-def update_skill(skillId):
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'Please provide data to update the skill.'}), 400
-    doc_ref = db.collection('skills').document(skillId)
-    if not doc_ref.get().exists:
-        return jsonify({'error': 'Skill not found.'}), 404
-    doc_ref.update(data)
-    return jsonify({'message': 'Skill updated successfully'}), 200
+    def __init__(self, skill_id, skill_name, skill_status):
+        self.skill_id = skill_id
+        self.skill_name = skill_name
+        self.skill_status = skill_status
 
-# @app.route('/skills', methods=['POST'])
-# def add_skill_employee():
-#     data = request.get_json()
-#     if not data:
-#         return jsonify({'error': 'Please provide data for the new employee.'}), 400
+    def json(self):
+        return {"skill_id": self.skill_id, "skill_name": self.skill_name, "skill_status": self.skill_status}
 
-#     doc_ref = db.collection('skills').document()
-#     doc_ref.set(data)
-#     return jsonify({'message': 'Employee successfully added', 'id': doc_ref.id}), 201
+@app.route('/skills')
+def get_all():
+    skillsList = Skill.query.all()
+    if len(skillsList):
+        return jsonify({
+            "code": 200,
+            "data": {
+                "skill": [skill.json() for skill in skillsList]
+            }
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "There are no skills"
+    }), 404
 
-# @app.route('/skills/<string:employeeId>', methods=['GET'])
-# def read_employee(employeeId):
-#     doc_ref = db.collections('skills').document(employeeId)
-#     doc = doc_ref.get()
-#     if not doc.exists:
-#         return jsonify({'error': 'Item not found'}), 404
-#     return jsonify(doc.to_dict()), 200
+@app.route('/skills/<int:skill_id>')
+def find_by_skill_id(skill_id):
+    skill = Skill.query.filter_by(skill_id=skill_id).first()
+    if skill:
+        return jsonify({
+            "code": 200,
+            "skill": skill.json()
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "Skill not found."
+    }), 404
 
-# @app.route('/skills', methods=['GET'])
-# def get_skills():
-#     docs = db.collection('skills').get()
-    
-#     data = []
-#     for doc in docs:
-#         toAppend = doc.to_dict()
-#         toAppend['id'] = doc.id
-#         data.append(toAppend)
-#     return jsonify(data), 200
+@app.route('/get-lacking-skills/<int:staff_id>/<int:role_listing_id>')
+def get_lacking_skills(staff_id, role_listing_id):
+    try:
+        if not staff_id or not role_listing_id:
+            return jsonify({
+                "code": 400,
+                "error": "Missing staff_id or role_listing_id in query parameters"
+            }), 400
+        
+        required_skills = (
+            db.session.query(Role_skill.skill_id)
+            .filter(Role_skill.role_id == role_listing_id)
+            .all()
+        )
+        staff_skills = (
+            db.session.query(Skills.skill_id)
+            .filter(Skills.staff_id == staff_id)
+            .all()
+        )
 
-# @app.route('/skills/<string:employeeId>', methods=['PUT'])
-# def update_employee(employeeId):
-#     data = request.get_json()
-#     if not data:
-#         return jsonify({'error': 'Please provide data to update the bakery.'}), 400
-#     doc_ref = db.collection('skills').document(employeeId)
-#     if not doc_ref.get().exists:
-#         return jsonify({'error': 'Listing not found.'}), 404
-#     doc_ref.update(data)
-#     return jsonify({'message': 'Listing updated successfully'}), 200
+        required_skills_set = set(skill[0] for skill in required_skills)
+        staff_skills_set = set(skill[0] for skill in staff_skills)
+        lacking_skill_ids = list(required_skills_set - staff_skills_set)
+        lacking_skills = (
+            db.session.query(Skill)
+            .filter(Skill.skill_id.in_(lacking_skill_ids))
+            .all()
+        )
 
-# @app.route('/skills/<string:employeeId>', methods=['DELETE'])
-# def delete_employee(employeeId):
-#     doc_ref = db.collection('skills').document(employeeId)
-#     if not doc_ref.get().exists:
-#         return jsonify({'error': 'Listing not found.'}), 404
-#     doc_ref.delete()
-#     return jsonify({'message': 'Listing deleted successfully'}), 200
+        return jsonify({
+            "code":200,
+            "lacking_skills": [skill.json() for skill in lacking_skills]
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001, debug=True)

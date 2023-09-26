@@ -65,7 +65,7 @@ class Staff_roles(db.Model):
         self.sr_status = sr_status
     
     def json(self):
-        return {"staff_id": self.staff_id, "staff_role":self.staff_role, "role_type":self.role_type, "sr_status":sr_status}
+        return {"staff_id": self.staff_id, "staff_role":self.staff_role, "role_type":self.role_type, "sr_status":self.sr_status}
 
 class Skills(db.Model):
     __tablename__ = 'STAFF_SKILLS'
@@ -118,7 +118,7 @@ def find_by_staff_id(staff_id):
         }
     ), 404
     
-@app.route("/staff/<int:skill_id>")
+@app.route("/staff/skill/<int:skill_id>")
 def find_by_skill(skill_id):
     staff = Skills.query.filter_by(skill_id=skill_id, ss_status='active')
     res= []

@@ -1,0 +1,279 @@
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Enum
+from sqlalchemy.exc import IntegrityError
+from flask_cors import CORS
+from dotenv import load_dotenv
+from os import environ
+from skill import Skill
+
+from staff import Staff
+
+load_dotenv()
+
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class Role(db.Model):
+    __tablename__ = 'ROLE_DETAILS'
+
+    role_id = db.Column(db.Integer, primary_key=True)
+    role_name = db.Column(db.String(50), nullable=False)
+    role_description = db.Column(db.String(50000), nullable=False)
+    role_status = db.Column(Enum('active', 'inactive'), nullable=False)
+
+    def __init__(self, role_id, role_name, role_description, role_status):
+        self.role_id = role_id
+        self.role_name = role_name
+        self.role_description = role_description
+        self.role_status = role_status
+
+    def json(self):
+        return {"role_id": self.role_id, "role_name": self.role_name, "role_description": self.role_description, "role_status": self.role_status}
+
+class Role_listing(db.Model):
+    __tablename__ = 'ROLE_LISTINGS'
+
+    role_listing_id = db.Column(db.Integer, primary_key=True, unique=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id'))
+    role_listing_desc = db.Column(db.String(5000))
+    role_listing_source = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
+    role_listing_open = db.Column(db.Date)
+    role_listing_close = db.Column(db.Date, nullable=True)
+    role_listing_creator = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
+    role_listing_ts_create = db.Column(db.Date)
+    role_listing_updater = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
+    role_listing_ts_update = db.Column(db.Date)
+
+    role = db.relationship('Role', foreign_keys=[role_id])
+    source_staff = db.relationship('Staff', foreign_keys=[role_listing_source])
+    creator_staff = db.relationship('Staff', foreign_keys=[role_listing_creator])
+    updater_staff = db.relationship('Staff', foreign_keys=[role_listing_updater])
+
+class Role_application(db.Model):
+    __tablename__ = 'ROLE_APPLICATIONS'
+
+    role_app_id = db.Column(db.Integer, primary_key=True)
+    role_listing_id = db.Column(db.Integer, db.ForeignKey('ROLE_LISTINGS.role_listing_id', ondelete='CASCADE'))
+    staff_id = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id', ondelete='CASCADE'))
+    role_app_status = db.Column(Enum('applied', 'withdrawn'), nullable=False)
+    role_app_ts_create = db.Column(db.Date)
+
+    role_listing = db.relationship('Role_listing', backref='applications', foreign_keys=[role_listing_id])
+    staff = db.relationship('Staff', backref='applications', foreign_keys=[staff_id])
+
+class Role_skill(db.Model):
+    __tablename__ = 'ROLE_SKILLS'
+
+    role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id', ondelete='CASCADE'), primary_key=True)
+    skill_id = db.Column(db.Integer, db.ForeignKey('SKILL_DETAILS.skill_id', ondelete='CASCADE'), primary_key=True)
+
+    role = db.relationship('Role', backref='skills', foreign_keys=[role_id])
+    skill = db.relationship('Skill', backref='roles', foreign_keys=[skill_id])
+
+@app.route('/roles')
+def get_all():
+    roleList = Role.query.all()
+    if len(roleList):
+        return jsonify({
+            "code": 200,
+            "data": {
+                "role": [role.json() for role in roleList]
+            }
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "There are no roles"
+    }), 404
+
+@app.route('/roles/<int:role_id>')
+def find_by_skill_id(role_id):
+    role = Role.query.filter_by(role_id=role_id).first()
+    if role:
+        return jsonify({
+            "code": 200,
+            "role": role.json()
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "Role not found."
+    }), 404
+
+@app.route('/role-listings')
+def get_all_listings():
+    listingList = Role_listing.query.all()
+    if len(listingList):
+        return jsonify({
+            "code": 200,
+            "data": {
+                "listing": [listing.json() for listing in listingList]
+            }
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "There are no role listings."
+    }), 404
+
+@app.route('/role-listings/<int:role_listing_id>')
+def get_listing(role_listing_id):
+    listing = Role_listing.query.get(role_listing_id)
+    if listing:
+        return jsonify({
+            "code": 200,
+            "listing": listing.json()
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "Role listing not found."
+    }), 404
+
+@app.route("/role-listings/<int:role_listing_id>", methods=["PUT"])
+def update_role_listing(role_listing_id):
+    try:
+        data = request.get_json()
+        existing_role_listing = Role_listing.query.get(role_listing_id)
+
+        if not existing_role_listing:
+            return jsonify({
+                "code": 404,
+                "error": "Role listing not found"
+            }), 404
+
+        for key, value in data.items():
+            setattr(existing_role_listing, key, value)
+
+        db.session.commit()
+
+        return jsonify({
+            "code": 200,
+            "message": "Role listing updated successfully", 
+            "role_listing": existing_role_listing.json()
+        }), 200
+
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+@app.route('/role-listings', methods=["POST"])
+def add_role_listing():
+    try:
+        data = request.get_json()
+        new_role_listing = Role_listing(
+            role_id=data["role_id"],
+            role_listing_desc=data["role_listing_desc"],
+            role_listing_source=data["role_listing_source"],
+            role_listing_open=data["role_listing_open"],
+            role_listing_close=data.get("role_listing_close"),  # Optional field
+            role_listing_creator=data["role_listing_creator"],
+            role_listing_ts_create=data["role_listing_ts_create"]
+        )
+
+        db.session.add(new_role_listing)
+        db.session.commit()
+
+        return jsonify({
+            "code": 201,
+            "message": "Role listing added successfully",
+            "role_listing": new_role_listing.json()
+        }), 201
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+    except IntegrityError as e: 
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "Database error: " + str(e)
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occured: " + str(e)
+        }), 500
+    
+@app.route('/filter-role-listings-by-skills', methods=["GET"])
+def filter_role_listings_by_skills():
+    try:
+        skill_ids_param = request.args.get("skill_ids")
+
+        if not skill_ids_param:
+            return jsonify({
+                "code": 400,
+                "error": "No skill_ids provided in query parameters"
+            }), 400
+
+        skill_ids = [int(skill_id) for skill_id in skill_ids_param.split(",")]
+
+        filtered_role_listings = (
+            db.session.query(Role_listing)
+            .join(Role_skill, Role_listing.role_id == Role_skill.role_id)
+            .filter(Role_skill.skill_id.in_(skill_ids))
+            .distinct()
+            .all()
+        )
+        db.session.close()
+
+        filtered_role_listings_json = [listing.json() for listing in filtered_role_listings]
+
+        return jsonify({
+            "code": 200,
+            "filtered_role_listings": filtered_role_listings_json
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+@app.route('/role-applications', methods=["POST"])
+def create_role_application():
+    try:
+        data = request.get_json()
+
+        new_role_application = Role_application(
+            role_listing_id=data["role_listing_id"],
+            staff_id=data["staff_id"],
+            role_app_status=data["role_app_status"],
+            role_app_ts_create=data["role_app_ts_create"]
+        )
+        db.session.add(new_role_application)
+        db.session.commit()
+
+        return jsonify({
+            "code": 201,
+            "message": "Role application added successfully",
+            "role_application": new_role_application.json()
+        }), 201
+
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5002, debug=True)
