@@ -8,10 +8,9 @@ from classes import *
 load_dotenv()
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
 @app.route("/staff")
 def get_all():

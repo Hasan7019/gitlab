@@ -1,19 +1,7 @@
-from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum
-from sqlalchemy.exc import IntegrityError
-from flask_cors import CORS
-from dotenv import load_dotenv
-from os import environ
 
-load_dotenv()
-
-app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 class Role(db.Model):
     __tablename__ = 'ROLE_DETAILS'
@@ -51,6 +39,32 @@ class Role_listing(db.Model):
     creator_staff = db.relationship('Staff', foreign_keys=[role_listing_creator])
     updater_staff = db.relationship('Staff', foreign_keys=[role_listing_updater])
 
+    def __init__(self, role_listing_id, role_id, role_listing_desc, role_listing_source, role_listing_open, role_listing_close, role_listing_creator, role_listing_ts_create, role_listing_updater, role_listing_ts_update, role, source_staff, creator_staff, updater_staff):
+        self.role_listing_id = role_listing_id
+        self.role_id = role_id
+        self.role_listing_desc = role_listing_desc
+        self.role_listing_source = role_listing_source
+        self.role_listing_open = role_listing_open
+        self.role_listing_close = role_listing_close
+        self.role_listing_creator = role_listing_creator
+        self.role_listing_ts_create = role_listing_ts_create
+        self.role_listing_updater = role_listing_updater
+        self.role_listing_ts_update = role_listing_ts_update
+    
+    def json(self):
+        return {
+            "role_listing_id": self.role_listing_id,
+            "role_id": self.role_id,
+            "role_listing_desc": self.role_listing_desc,
+            "role_listing_source": self.role_listing_source,
+            "role_listing_open": self.role_listing_open,
+            "role_listing_close": self.role_listing_close,
+            "role_listing_creator": self.role_listing_creator,
+            "role_listing_ts_create": self.role_listing_ts_create,
+            "role_listing_updater": self.role_listing_updater,
+            "role_listing_ts_update": self.role_listing_ts_update
+        }
+
 class Role_application(db.Model):
     __tablename__ = 'ROLE_APPLICATIONS'
 
@@ -63,6 +77,26 @@ class Role_application(db.Model):
     role_listing = db.relationship('Role_listing', backref='applications', foreign_keys=[role_listing_id])
     staff = db.relationship('Staff', backref='applications', foreign_keys=[staff_id])
 
+    def __init__(self, role_app_id, role_listing_id, staff_id, role_app_status, role_app_ts_create, role_listing, staff):
+        self.role_app_id = role_app_id
+        self.role_listing_id = role_listing_id
+        self.staff_id = staff_id
+        self.role_app_status = role_app_status
+        self.role_app_ts_create = role_app_ts_create
+        self.role_listing = role_listing
+        self.staff = staff
+    
+    def json(self):
+        return {
+            "role_app_id": self.role_app_id,
+            "role_listing_id": self.role_listing_id,
+            "staff_id": self.staff_id,
+            "role_app_status": self.role_app_status,
+            "role_app_ts_create": self.role_app_ts_create,
+            "role_listing": self.role_listing,
+            "staff": self.staff
+        }
+
 class Role_skill(db.Model):
     __tablename__ = 'ROLE_SKILLS'
 
@@ -71,6 +105,20 @@ class Role_skill(db.Model):
 
     role = db.relationship('Role', backref='skills', foreign_keys=[role_id])
     skill = db.relationship('Skill', backref='roles', foreign_keys=[skill_id])
+
+    def __init__(self, role_id, skill_id, role, skill):
+        self.role_id = role_id
+        self.skill_id = skill_id
+        self.role = role
+        self.skill = skill
+
+    def json(self):
+        return {
+            "role_id": self.role_id,
+            "skill_id": self.skill_id,
+            "role": self.role,
+            "skill": self.skill
+        }
 
 class Skill(db.Model):
     __tablename__ = 'SKILL_DETAILS'
@@ -156,6 +204,3 @@ class Skills(db.Model):
 
     def json(self):
         return {"staff_id":self.staff_id, "skill_id": self.skill_id, "ss_status": self.ss_status}
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003, debug=True)
