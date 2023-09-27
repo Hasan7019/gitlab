@@ -4,3 +4,4 @@ package.json
 node_modules
 spm
 __pycache__
+.DS_store
