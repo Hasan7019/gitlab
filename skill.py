@@ -54,12 +54,14 @@ def get_lacking_skills(staff_id, role_listing_id):
         
         required_skills = (
             db.session.query(Role_skill.skill_id)
-            .filter(Role_skill.role_id == role_listing_id)
+            .join(Role_listing, Role_skill.role_id == Role_listing.role_id)
+            .filter(Role_listing.role_listing_id == role_listing_id)
             .all()
         )
         staff_skills = (
             db.session.query(Skills.skill_id)
             .filter(Skills.staff_id == staff_id)
+            .filter(Skills.ss_status == 'active')
             .all()
         )
 

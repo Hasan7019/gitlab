@@ -113,15 +113,17 @@ def add_role_listing():
     try:
         data = request.get_json()
         new_role_listing = Role_listing(
+            role_listing_id=data["role_listing_id"],
             role_id=data["role_id"],
             role_listing_desc=data["role_listing_desc"],
             role_listing_source=data["role_listing_source"],
             role_listing_open=data["role_listing_open"],
             role_listing_close=data.get("role_listing_close"),  # Optional field
             role_listing_creator=data["role_listing_creator"],
-            role_listing_ts_create=data["role_listing_ts_create"]
+            role_listing_ts_create=data["role_listing_ts_create"],
+            role_listing_updater=data["role_listing_updater"],
+            role_listing_ts_update=data["role_listing_ts_update"],
         )
-
         db.session.add(new_role_listing)
         db.session.commit()
 

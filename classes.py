@@ -39,7 +39,7 @@ class Role_listing(db.Model):
     creator_staff = db.relationship('Staff', foreign_keys=[role_listing_creator])
     updater_staff = db.relationship('Staff', foreign_keys=[role_listing_updater])
 
-    def __init__(self, role_listing_id, role_id, role_listing_desc, role_listing_source, role_listing_open, role_listing_close, role_listing_creator, role_listing_ts_create, role_listing_updater, role_listing_ts_update, role, source_staff, creator_staff, updater_staff):
+    def __init__(self, role_listing_id, role_id, role_listing_desc, role_listing_source, role_listing_open, role_listing_close, role_listing_creator, role_listing_ts_create, role_listing_updater, role_listing_ts_update):
         self.role_listing_id = role_listing_id
         self.role_id = role_id
         self.role_listing_desc = role_listing_desc
@@ -62,7 +62,7 @@ class Role_listing(db.Model):
             "role_listing_creator": self.role_listing_creator,
             "role_listing_ts_create": self.role_listing_ts_create,
             "role_listing_updater": self.role_listing_updater,
-            "role_listing_ts_update": self.role_listing_ts_update
+            "role_listing_ts_update": self.role_listing_ts_update,
         }
 
 class Role_application(db.Model):
