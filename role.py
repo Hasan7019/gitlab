@@ -5,9 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_cors import CORS
 from dotenv import load_dotenv
 from os import environ
-from skill import Skill
-
-from staff import Staff
+from classes import *
 
 load_dotenv()
 
@@ -17,63 +15,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
-class Role(db.Model):
-    __tablename__ = 'ROLE_DETAILS'
-
-    role_id = db.Column(db.Integer, primary_key=True)
-    role_name = db.Column(db.String(50), nullable=False)
-    role_description = db.Column(db.String(50000), nullable=False)
-    role_status = db.Column(Enum('active', 'inactive'), nullable=False)
-
-    def __init__(self, role_id, role_name, role_description, role_status):
-        self.role_id = role_id
-        self.role_name = role_name
-        self.role_description = role_description
-        self.role_status = role_status
-
-    def json(self):
-        return {"role_id": self.role_id, "role_name": self.role_name, "role_description": self.role_description, "role_status": self.role_status}
-
-class Role_listing(db.Model):
-    __tablename__ = 'ROLE_LISTINGS'
-
-    role_listing_id = db.Column(db.Integer, primary_key=True, unique=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id'))
-    role_listing_desc = db.Column(db.String(5000))
-    role_listing_source = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
-    role_listing_open = db.Column(db.Date)
-    role_listing_close = db.Column(db.Date, nullable=True)
-    role_listing_creator = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
-    role_listing_ts_create = db.Column(db.Date)
-    role_listing_updater = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id'))
-    role_listing_ts_update = db.Column(db.Date)
-
-    role = db.relationship('Role', foreign_keys=[role_id])
-    source_staff = db.relationship('Staff', foreign_keys=[role_listing_source])
-    creator_staff = db.relationship('Staff', foreign_keys=[role_listing_creator])
-    updater_staff = db.relationship('Staff', foreign_keys=[role_listing_updater])
-
-class Role_application(db.Model):
-    __tablename__ = 'ROLE_APPLICATIONS'
-
-    role_app_id = db.Column(db.Integer, primary_key=True)
-    role_listing_id = db.Column(db.Integer, db.ForeignKey('ROLE_LISTINGS.role_listing_id', ondelete='CASCADE'))
-    staff_id = db.Column(db.Integer, db.ForeignKey('STAFF_DETAILS.staff_id', ondelete='CASCADE'))
-    role_app_status = db.Column(Enum('applied', 'withdrawn'), nullable=False)
-    role_app_ts_create = db.Column(db.Date)
-
-    role_listing = db.relationship('Role_listing', backref='applications', foreign_keys=[role_listing_id])
-    staff = db.relationship('Staff', backref='applications', foreign_keys=[staff_id])
-
-class Role_skill(db.Model):
-    __tablename__ = 'ROLE_SKILLS'
-
-    role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id', ondelete='CASCADE'), primary_key=True)
-    skill_id = db.Column(db.Integer, db.ForeignKey('SKILL_DETAILS.skill_id', ondelete='CASCADE'), primary_key=True)
-
-    role = db.relationship('Role', backref='skills', foreign_keys=[role_id])
-    skill = db.relationship('Skill', backref='roles', foreign_keys=[skill_id])
 
 @app.route('/roles')
 def get_all():

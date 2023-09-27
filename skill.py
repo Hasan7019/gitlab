@@ -4,9 +4,8 @@ from sqlalchemy import Enum
 from flask_cors import CORS
 from dotenv import load_dotenv
 from os import environ
+from classes import *
 
-from role import Role_skill
-from staff import Skills
 load_dotenv()
 
 app = Flask(__name__)
@@ -15,21 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
-class Skill(db.Model):
-    __tablename__ = 'SKILL_DETAILS'
-
-    skill_id = db.Column(db.Integer, primary_key=True)
-    skill_name = db.Column(db.String(50), nullable=False)
-    skill_status = db.Column(Enum('active', 'inactive'), nullable=False)
-
-    def __init__(self, skill_id, skill_name, skill_status):
-        self.skill_id = skill_id
-        self.skill_name = skill_name
-        self.skill_status = skill_status
-
-    def json(self):
-        return {"skill_id": self.skill_id, "skill_name": self.skill_name, "skill_status": self.skill_status}
 
 @app.route('/skills')
 def get_all():
