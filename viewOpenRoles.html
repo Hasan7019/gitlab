@@ -31,87 +31,84 @@
                 <tr>
                     <th scope="col">RoleID</th>
                     <th scope="col">Role Name
-                        <select class="table-filter" name="" id="">
-                            <option value="all">Show All</option>
-                            <option value="Head, Talent Attraction">Head, Talent Attraction</option>
-                            <option value="Learning Facilitator / Trainer">Learning Facilitator / Trainer</option>
-                            <option value="Agile Coach (SM)">Agile Coach (SM)</option>
-                        </select>
                     </th>
-                    <th scope="col">Role Description</th>
+                    <th scope="col">Description</th>
                     <th scope="col">Apply</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Head, Talent Attraction</td>
-                    <td>The Head, Talent Attraction is an influential and inspiring leader who adopts a broad
-                        perspective in the decisions he makes. He is articulate and displays a genuine passion for
-                        motivating and developing his team.</td>
-                    <td><button class="btn btn-success">Apply</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Learning Facilitator / Trainer</td>
-                    <td>The Learning Facilitator delivers learning products and services in a variety of environments,
-                        using multiple learning delivery modes and methods. He/She assesses learning needs and adapts
-                        the facilitation approach to reflect desired learning outcomes and learner needs. He is
-                        responsible for knowledge and skills transfer by delivering learning content, facilitating group
-                        discussions and responding to queries. He drives learner development and commitment to
-                        continuous learning by actively providing feedback and learner support. He evaluates curriculum
-                        effectiveness and recommends improvement areas by collecting learner feedback as well as
-                        analysing learning delivery approaches and materials</td>
-
-                    <td><button class="btn btn-success">Apply</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Agile Coach (SM)</td>
-                    <td>The Agile Coach (SM) coaches teams in the conduct of Agile practices and the implementation of
-                        Agile methodologies and practices in the organisation and acts as an effective Scrum Master in
-                        Agile Scrum teams.</td>
-
-                    <td><button class="btn btn-success">Apply</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">4</th>
-                    <td>Fire Warden</td>
-                    <td>The Fire Warden is responsible for testing fire alarms and firefighting equipment and
-                        implementing risk assessment recommendations. In the event of a confirmed fire alarm or fire
-                        drill, the warden assists in the safe evacuation of staff and visitors from the premise
-                        immediately.</td>
-
-                    <td><button class="btn btn-success">Apply</button></td>
-                </tr>
-
+            <tbody id="tbody">
             </tbody>
         </table>
         <script>
-            // Get the select element
-            var select = document.querySelector('.table-filter');
+            async function fetchListings() {
+                try {
+                    const res = await fetch('http://localhost:5002/role-listings');
+                    const data = await res.json();
 
-            // Add an event listener to the select element
-            select.addEventListener('change', function () {
-                // Get the selected value
-                var selectedValue = this.value;
-
-                // Get all the rows in the table body
-                var rows = document.querySelectorAll('tbody tr');
-
-                // Loop through each row
-                rows.forEach(function (row) {
-                    // Get the role name from the second cell in the row
-                    var roleName = row.cells[1].textContent;
-
-                    // If the selected value is "all" or the role name matches the selected value, show the row
-                    if (selectedValue === 'all' || roleName === selectedValue) {
-                        row.style.display = '';
+                    if (data.code === 200) {
+                        return data.data.listing;
                     } else {
-                        row.style.display = 'none';
+                        console.error('Failed to fetch listings.');
                     }
-                });
-            });
+                } catch (err) {
+                    console.error('An error occurred:', err);
+                }
+            }
+
+            async function fetchRole(id) {
+                try {
+                    const res = await fetch('http://localhost:5002/roles/' + id);
+                    const data = await res.json();
+
+                    if (data.code === 200) {
+                        return data.role;
+                    } else {
+                        console.error('Failed to fetch role.');
+                    }
+                } catch (err) {
+                    console.error('An error occurred:', err);
+                }
+            }
+
+            function createRow(roleId, roleName, listingDesc) {
+                const row = document.createElement('tr')
+
+                const idCell = document.createElement('td')
+                idCell.setAttribute('scope', 'row')
+                idCell.textContent = roleId
+                row.appendChild(idCell)
+
+                const nameCell = document.createElement('td')
+                nameCell.textContent = roleName
+                row.appendChild(nameCell)
+
+                const descCell = document.createElement('td')
+                descCell.textContent = listingDesc
+                row.appendChild(descCell)
+
+                const applyCell = document.createElement('td');
+                const applyButton = document.createElement('button');
+                applyButton.className = 'btn btn-success';
+                applyButton.textContent = 'Apply';
+                applyCell.appendChild(applyButton);
+                row.appendChild(applyCell);
+
+                return row
+            }
+
+            fetchListings().then(listings => {
+                const tbody = document.getElementById('tbody')
+                listings.forEach(listing => {
+                    fetchRole(listing.role_id).then(role => {
+                        let roleId = listing.role_id
+                        let roleName = role.role_name
+                        let listingDesc = listing.role_listing_desc
+                        const newRow = createRow(roleId, roleName, listingDesc)
+                        tbody.appendChild(newRow)
+                    })
+
+                })
+            })
         </script>
     </div>
 

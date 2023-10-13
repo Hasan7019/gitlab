@@ -8,6 +8,7 @@ from classes import *
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 
 db.init_app(app)
