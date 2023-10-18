@@ -83,7 +83,7 @@
         }
 
         // fetch data and display
-        Promise.all([fetchSkills(), fetchLackingSkills(1, 2)]) // TODO: replace these IDs with real values
+        Promise.all([fetchSkills(), fetchLackingSkills(123456789, 123456)]) // TODO: replace these IDs with real values
         .then(([staffSkills, lackingSkills]) => {
             // TODO: REPLACE staffSkills and jobSkills with fetched data
             // hardcoded for NOW
