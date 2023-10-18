@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Candidate Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom styles */
+    body {
+      background-color: #f8f9fa;
+    }
+    .profile-section {
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container mt-5">
+    <h1 class="text-center mb-5">Candidate Profile</h1>
+    
+    <!-- Navigation -->
+    <div class="d-flex justify-content-center mb-4">
+      <nav class="nav nav-pills">
+        <a class="nav-link active" href="#info">Personal Info</a>
+        <a class="nav-link" href="#skills">Skills</a>
+        <a class="nav-link" href="#experience">Work Experience</a>
+        <a class="nav-link" href="#education">Education</a>
+      </nav>
+    </div>
+
+    <!-- Personal Info -->
+    <section id="info" class="profile-section bg-white p-4 rounded">
+      <h2 class="mb-3">Personal Information</h2>
+      <p><strong>Name:</strong> John Doe</p>
+      <p><strong>Contact:</strong> johndoe@example.com</p>
+    </section>
+    
+    <!-- Skills -->
+    <section id="skills" class="profile-section bg-white p-4 rounded">
+      <h2 class="mb-3">Skills</h2>
+      <ul class="list-group">
+        <li class="list-group-item">JavaScript - Intermediate</li>
+        <li class="list-group-item">Python - Beginner</li>
+      </ul>
+    </section>
+
+    <!-- Work Experience -->
+    <section id="experience" class="profile-section bg-white p-4 rounded">
+      <h2 class="mb-3">Work Experience</h2>
+      <ul class="list-group">
+        <li class="list-group-item">Software Developer at ABC Corp, 2018-2020</li>
+        <li class="list-group-item">Web Developer at XYZ Ltd, 2016-2018</li>
+      </ul>
+    </section>
+
+    <!-- Education -->
+    <section id="education" class="profile-section bg-white p-4 rounded">
+      <h2 class="mb-3">Education</h2>
+      <ul class="list-group">
+        <li class="list-group-item">BS in Computer Science from Example University, 2012-2016</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- Authorization logic (TBD) -->
+  <script>
+    //  authorization logic to ensure only authorized personnel can view this page.
+  </script>
+
+</body>
+</html>
