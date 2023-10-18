@@ -107,19 +107,24 @@ def find_suitable_candidates(role_id):
                     else:
                         suitable[staff['staff_id']] += 1
         temp = []
-        for staff in suitable:
-            if suitable[staff] == len(skills_needed):
-                temp.append(staff)
+        for staff_id in suitable:
+            temp.append((staff_id, suitable[staff_id]))
+        sorted_temp = sorted(temp, key=lambda x:x[1])
         staffs = requests.get("http://127.0.0.1:5000/staff").json()['data']['staff']
         res = []
-        for i in temp:
+        for i in sorted_temp:
             for staff in staffs:
-                if staff['staff_id'] == i:
+                if staff['staff_id'] == i[0]:
+                    staff['matches'] = i[1]
+                    if i[1] == len(skills_needed):
+                        staff['match'] = True
+                    else:
+                        staff['match'] = False
                     res.append(staff)
 
         return jsonify({
                 "code": 200,
-                "skills": res
+                "data": res
             })
     except Exception as e:
             return jsonify({
