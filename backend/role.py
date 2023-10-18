@@ -33,7 +33,7 @@ def get_all():
     }), 404
 
 @app.route('/roles/<int:role_id>')
-def find_by_skill_id(role_id):
+def find_by_role_id(role_id):
     role = Role.query.filter_by(role_id=role_id).first()
     if role:
         return jsonify({

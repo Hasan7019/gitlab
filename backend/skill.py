@@ -89,10 +89,10 @@ def get_lacking_skills(staff_id, role_listing_id):
 @app.route('/skills/role/<int:role_id>')
 def get_skills_by_role(role_id):
     try:
-        skills = Role_skill.query.filter_by(role_id=role_id)
+        role_skills = Role_skill.query.filter_by(role_id=role_id)
         return jsonify({
             "code": 200,
-            "skills": [skill.json() for skill in skills]
+            "skills": [role_skill.skill.json() for role_skill in role_skills]
         })
     
     except Exception as e:
@@ -107,7 +107,7 @@ def get_role_skills():
         role_skills = Role_skill.query.all()
         return jsonify({
             "code": 200,
-            "skills": [role_skill.json() for role_skill in role_skills]
+            "skills": [role_skill.skill.json() for role_skill in role_skills]
         })
     
     except Exception as e:

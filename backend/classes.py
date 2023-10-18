@@ -10,6 +10,7 @@ class Role(db.Model):
     role_name = db.Column(db.String(50), nullable=False)
     role_description = db.Column(db.String(50000), nullable=False)
     role_status = db.Column(Enum('active', 'inactive'), nullable=False)
+    role_skills = db.relationship('Role_skill', backref='role')
 
     def __init__(self, role_id, role_name, role_description, role_status):
         self.role_id = role_id
@@ -103,9 +104,6 @@ class Role_skill(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id', ondelete='CASCADE'), primary_key=True)
     skill_id = db.Column(db.Integer, db.ForeignKey('SKILL_DETAILS.skill_id', ondelete='CASCADE'), primary_key=True)
 
-    role = db.relationship('Role', backref='skills', foreign_keys=[role_id])
-    skill = db.relationship('Skill', backref='roles', foreign_keys=[skill_id])
-
     def __init__(self, role_id, skill_id, role, skill):
         self.role_id = role_id
         self.skill_id = skill_id
@@ -122,6 +120,8 @@ class Skill(db.Model):
     skill_id = db.Column(db.Integer, primary_key=True)
     skill_name = db.Column(db.String(50), nullable=False)
     skill_status = db.Column(Enum('active', 'inactive'), nullable=False)
+    role_skills = db.relationship('Role_skill', backref='skill')
+    
 
     def __init__(self, skill_id, skill_name, skill_status):
         self.skill_id = skill_id
