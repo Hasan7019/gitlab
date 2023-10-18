@@ -5,6 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from os import environ
 from classes import *
+import requests
 
 load_dotenv()
 
@@ -79,6 +80,36 @@ def get_lacking_skills(staff_id, role_listing_id):
             "code":200,
             "lacking_skills": [skill.json() for skill in lacking_skills]
         }), 200
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+@app.route('/skills/role/<int:role_id>')
+def get_skills_by_role(role_id):
+    try:
+        skills = Role_skill.query.filter_by(role_id=role_id)
+        return jsonify({
+            "code": 200,
+            "skills": [skill.json() for skill in skills]
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+@app.route('/role-skill')
+def get_role_skills():
+    try:
+        role_skills = Role_skill.query.all()
+        return jsonify({
+            "code": 200,
+            "skills": [role_skill.json() for role_skill in role_skills]
+        })
+    
     except Exception as e:
         return jsonify({
             "code": 500,

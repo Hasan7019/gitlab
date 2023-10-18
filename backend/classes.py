@@ -109,15 +109,11 @@ class Role_skill(db.Model):
     def __init__(self, role_id, skill_id, role, skill):
         self.role_id = role_id
         self.skill_id = skill_id
-        self.role = role
-        self.skill = skill
 
     def json(self):
         return {
             "role_id": self.role_id,
-            "skill_id": self.skill_id,
-            "role": self.role,
-            "skill": self.skill
+            "skill_id": self.skill_id
         }
 
 class Skill(db.Model):
