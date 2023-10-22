@@ -340,6 +340,83 @@
   </div>
 
     <!-- SCRIPTS -->
+
+    <script>
+                  async function fetchListings() {
+                try {
+                    const res = await fetch('http://localhost:5002/role-listings');
+                    const data = await res.json();
+
+                    if (data.code === 200) {
+                        return data.data.listing;
+                    } else {
+                        console.error('Failed to fetch listings.');
+                    }
+                } catch (err) {
+                    console.error('An error occurred:', err);
+                }
+            }
+
+            async function fetchRole(id) {
+                try {
+                    const res = await fetch('http://localhost:5002/roles/' + id);
+                    const data = await res.json();
+
+                    if (data.code === 200) {
+                        return data.role;
+                    } else {
+                        console.error('Failed to fetch role.');
+                    }
+                } catch (err) {
+                    console.error('An error occurred:', err);
+                }
+            }
+
+            function createRow(roleId, roleName, listingDesc) {
+                const row = document.createElement('tr')
+
+                const idCell = document.createElement('td')
+                idCell.setAttribute('scope', 'row')
+                idCell.textContent = roleId
+                row.appendChild(idCell)
+
+                const nameCell = document.createElement('td')
+                nameCell.textContent = roleName
+                row.appendChild(nameCell)
+
+                const descCell = document.createElement('td')
+                descCell.textContent = listingDesc
+                row.appendChild(descCell)
+
+                const applyCell = document.createElement('td');
+                const applyButton = document.createElement('button');
+                applyButton.className = 'btn btn-success';
+                applyButton.textContent = 'Apply';
+                applyCell.appendChild(applyButton);
+                row.appendChild(applyCell);
+
+                return row
+            }
+
+            fetchListings().then(listings => {
+                const tbody = document.getElementById('tbody')
+                listings.forEach(listing => {
+                    fetchRole(listing.role_id).then(role => {
+                        let roleId = listing.role_id
+                        let roleName = role.role_name
+                        let listingDesc = listing.role_listing_desc
+                        const newRow = createRow(roleId, roleName, listingDesc)
+                        tbody.appendChild(newRow)
+                    })
+
+                })
+            })
+
+
+    </script>
+
+
+
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/isotope.pkgd.min.js"></script>
