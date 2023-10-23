@@ -128,7 +128,7 @@
           </div>
         </div>
         
-        <ul class="job-listings mb-5">
+        <ul class="job-listings mb-5" id="jobListings">
           <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
             <a href="job-single.html"></a>
             <div class="job-listing-logo">
@@ -318,7 +318,31 @@
                 try {
                     const res = await fetch('http://localhost:5002/role-listings');
                     const data = await res.json();
+                    console.log(data.data.listing)
+                    for (let postObj of data.data.listing){
+                      document.getElementById("jobListings").innerHTML+=`
+                      <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
+            <a href="job-single.html"></a>
+            <div class="job-listing-logo">
+              <img src="images/job_logo_2.jpg" alt="Image" class="img-fluid">
+            </div>
 
+            <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
+              <div class="job-listing-position custom-width w-50 mb-3 mb-sm-0">
+                <h2>${postObj.role_listing_desc}</h2>
+                <strong>Sprint</strong>
+              </div>
+              <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
+                <span class="icon-room"></span> Overland Park, Kansas 
+              </div>
+              <div class="job-listing-meta">
+                <span class="badge badge-success">Full Time</span>
+              </div>
+            </div>
+          </li>
+                      `
+
+        }
                     if (data.code === 200) {
                         return data.data.listing;
                     } else {
@@ -329,11 +353,14 @@
                 }
             }
 
+            
+            
+
             async function fetchRole(id) {
                 try {
                     const res = await fetch('http://localhost:5002/roles/' + id);
                     const data = await res.json();
-
+                    
                     if (data.code === 200) {
                         return data.role;
                     } else {
@@ -383,7 +410,7 @@
 
                 })
             })
-
+          
 
     </script>
 
