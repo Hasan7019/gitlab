@@ -116,5 +116,37 @@ def get_role_skills():
             "error": "An unexpected error occurred: " + str(e)
         }), 500
 
+@app.route('/role-skill', methods=["POST"])
+def add_role_skill():
+    try:
+        data = request.get_json()
+
+        new_role_skill = Role_skill(
+            role_id=data["role_id"],
+            skill_id=data["skill_id"],
+        )
+        print(new_role_skill)
+        db.session.add(new_role_skill)
+        db.session.commit()
+
+        return jsonify({
+            "code": 201,
+            "message": "Role added successfully",
+            "role": new_role_skill.json()
+        }), 201
+
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
