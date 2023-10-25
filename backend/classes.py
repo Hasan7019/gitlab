@@ -104,7 +104,7 @@ class Role_skill(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('ROLE_DETAILS.role_id', ondelete='CASCADE'), primary_key=True)
     skill_id = db.Column(db.Integer, db.ForeignKey('SKILL_DETAILS.skill_id', ondelete='CASCADE'), primary_key=True)
 
-    def __init__(self, role_id, skill_id, role, skill):
+    def __init__(self, role_id, skill_id):
         self.role_id = role_id
         self.skill_id = skill_id
 

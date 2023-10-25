@@ -32,6 +32,39 @@ def get_all():
         "message": "There are no roles"
     }), 404
 
+@app.route('/roles', methods=["POST"])
+def add_role():
+    try:
+        data = request.get_json()
+
+        new_role = Role(
+            role_id=data["role_id"],
+            role_name=data["role_name"],
+            role_description=data["role_description"],
+            role_status=data["role_status"]
+        )
+        db.session.add(new_role)
+        db.session.commit()
+
+        return jsonify({
+            "code": 201,
+            "message": "Role added successfully",
+            "role": new_role.json()
+        }), 201
+
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
 @app.route('/roles/<int:role_id>')
 def find_by_role_id(role_id):
     role = Role.query.filter_by(role_id=role_id).first()
