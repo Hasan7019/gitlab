@@ -99,6 +99,30 @@
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+                  <!-- multi-select dropdown for skills?? -->
+                  <select class="selectpicker" multiple data-live-search="true" title="Select Skills" id="skillsSelect">
+                    <option>Python</option>
+                    <option>JavaScript</option>
+                    <option>Java</option>
+                    <!-- ... other skill (populate ..?or) -->
+                  </select>
+              
+                  <!-- Skill Levels -->
+                  <select class="selectpicker" title="Select Skill Level" id="levelSelect">
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Expert</option>
+                  </select>
+              
+                  <!-- button to initiate filtering -->
+                  <button type="button" class="btn btn-primary" onclick="filterCandidates()">Filter</button>
+              
+                  <!-- List of candidates -->
+                  <ul class="list-group" id="candidatesList">
+                    <!-- Candidate items will be injected here -->
+                  </ul>
+                </div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
                   <button type="submit" class="btn btn-primary btn-lg btn-block text-white btn-search"><span
                       class="icon-search icon mr-2"></span>Search Job</button>
                 </div>
@@ -129,7 +153,7 @@
 
         <div class="row mb-5 justify-content-center">
           <div class="col-md-7 text-center">
-            <h2 class="section-title mb-2">43,167 Job Listed</h2>
+            <h2 class="section-title mb-2">43,167 Jobs Listed</h2>
           </div>
         </div>
 
@@ -272,6 +296,34 @@
         $('#jobModal').modal('show');
       });
     }
+             //  filter candidates based on selected skills and level
+    function filterCandidates() {
+      var selectedSkills = $('#skillsSelect').val();
+      var selectedLevel = $('#levelSelect').val();
+      
+      // Assume this function sends a request to the server to filter candidates
+      // and updates the candidates list in the UI
+      updateCandidatesList(selectedSkills, selectedLevel);
+    }
+
+    // Dummy function to represent updating the candidates list
+    function updateCandidatesList(skills, level) {
+      // Clear the current list
+      $('#candidatesList').empty();
+      
+      // DUMMY DATA
+      var filteredCandidates = [
+        { name: 'John Doe', skills: ['Python', 'Java'], level: 'Beginner' },
+        { name: 'Jane Smith', skills: ['JavaScript', 'Java'], level: 'Expert' },
+        // ... other candidates
+      ];
+      
+    
+      for (var candidate of filteredCandidates) {
+        $('#candidatesList').append('<li class="list-group-item">' + candidate.name + ' - ' + candidate.skills.join(', ') + ' - ' + candidate.level + '</li>');
+      }
+    }
+
   </script>
 
 
