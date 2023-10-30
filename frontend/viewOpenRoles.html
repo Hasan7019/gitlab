@@ -106,17 +106,17 @@
                     <option>Java</option>
                     <!-- ... other skill (populate ..?or) -->
                   </select>
-
+              
                   <!-- Skill Levels -->
                   <select class="selectpicker" title="Select Skill Level" id="levelSelect">
                     <option>Beginner</option>
                     <option>Intermediate</option>
                     <option>Expert</option>
                   </select>
-
+              
                   <!-- button to initiate filtering -->
                   <button type="button" class="btn btn-primary" onclick="filterCandidates()">Filter</button>
-
+              
                   <!-- List of candidates -->
                   <ul class="list-group" id="candidatesList">
                     <!-- Candidate items will be injected here -->
@@ -236,20 +236,25 @@
         for (let postObj of data.data.listing) {
           document.getElementById("jobListings").innerHTML += `
             <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id})">
-              <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
-                <div class="job-listing-logo">
-                  ${postObj.role_id}
-                </div>
-                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0">
+              <div class="job-listing-logo">
+                ${postObj.role_id}
+              </div>
+
+              <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
+                <div class="job-listing-position custom-width w-50 mb-3 mb-sm-0">
                   <h2>${postObj.role_listing_desc}</h2>
+                  
                 </div>
                 <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
                   Closing on: ${postObj.role_listing_close} 
                 </div>
+                <div class="job-listing-meta">
+                  <span class="badge badge-success">Full Time</span>
+                </div>
               </div>
             </li>
-          `
-          getBadges(postObj.role_id)
+                      `
+
         }
         if (data.code === 200) {
           return data.data.listing;
@@ -261,21 +266,6 @@
       }
     }
 
-    async function getBadges(role_id) {
-      try {
-        const res = await fetch('http://localhost:5001/skills/role/' + role_id)
-        const data = await res.json()
-        if (data.skills.length != 0) {
-          for (skill of data.skills) {
-            document.getElementById(role_id).innerHTML += `
-              <span class="badge badge-success">${skill.skill_name}</span>
-            `
-          }
-        }
-      } catch (err) {
-        console.error('An error occured:', err)
-      }
-    }
 
     async function fetchRole(id) {
       try {
@@ -307,11 +297,11 @@
         $('#jobModal').modal('show');
       });
     }
-    //  filter candidates based on selected skills and level
+             //  filter candidates based on selected skills and level
     function filterCandidates() {
       var selectedSkills = $('#skillsSelect').val();
       var selectedLevel = $('#levelSelect').val();
-
+      
       // Assume this function sends a request to the server to filter candidates
       // and updates the candidates list in the UI
       updateCandidatesList(selectedSkills, selectedLevel);
@@ -321,7 +311,7 @@
     function updateCandidatesList(skills, level) {
       // Clear the current list
       $('#candidatesList').empty();
-
+      
       // DUMMY DATA (to be updated!!!)
       var filteredCandidates = [
         { name: 'John Doe', skills: ['Python', 'Java'], level: 'Beginner' },
@@ -329,8 +319,8 @@
         { name: 'Elijah Khor', skills: ['JavaScript', 'Java'], level: 'Expert' },
         // ... other candidates
       ];
-
-
+      
+    
       for (var candidate of filteredCandidates) {
         $('#candidatesList').append('<li class="list-group-item">' + candidate.name + ' - ' + candidate.skills.join(', ') + ' - ' + candidate.level + '</li>');
       }
