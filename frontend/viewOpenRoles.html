@@ -15,9 +15,6 @@
   <link rel="stylesheet" href="css/owl.carousel.min.css">
   <link rel="stylesheet" href="css/animate.min.css">
   <link rel="stylesheet" href="css/quill.snow.css">
-
-
-  <!-- MAIN CSS -->
   <link rel="stylesheet" href="css/style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -42,7 +39,7 @@
         </div>
       </div>
       <div class="site-mobile-menu-body"></div>
-    </div> <!-- .site-mobile-menu -->
+    </div>
 
 
     <!-- NAVBAR -->
@@ -56,10 +53,8 @@
     <!-- END NAVBAR -->
 
 
-    <!-- HOME -->
     <section class="section-hero home-section overlay inner-page bg-image"
       style="background-image: url('images/hero_1.jpg');" id="home-section">
-
       <div class="container">
         <div class="row align-items-center justify-content-center">
           <div class="col-md-12">
@@ -70,27 +65,8 @@
             <form method="post" class="search-jobs-form">
               <div class="row mb-5">
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <input type="text" class="form-control form-control-lg" placeholder="Search for a role">
+                  <input type="text" id="search" class="form-control form-control-lg" placeholder="Search for a role">
                 </div>
-                <!-- <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <select class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="">
-                    <option>Anywhere</option>
-                    <option>San Francisco</option>
-                    <option>Palo Alto</option>
-                    <option>New York</option>
-                    <option>Manhattan</option>
-                    <option>Ontario</option>
-                    <option>Toronto</option>
-                    <option>Kansas</option>
-                    <option>Mountain View</option>
-                  </select>
-                </div> -->
-                <!-- <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <select class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true" title="Select Job Type">
-                    <option>Part Time</option>
-                    <option>Full Time</option>
-                  </select>
-                </div> -->
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
                   <select class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true"
                     title="Filter By Date">
@@ -99,31 +75,17 @@
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <!-- multi-select dropdown for skills?? -->
                   <select class="selectpicker" multiple data-live-search="true" title="Select Skills" id="skillsSelect">
-                    <option>Python</option>
-                    <option>JavaScript</option>
-                    <option>Java</option>
-                    <!-- ... other skill (populate ..?or) -->
                   </select>
 
-                  <!-- Skill Levels -->
-                  <select class="selectpicker" title="Select Skill Level" id="levelSelect">
-                    <option>Beginner</option>
-                    <option>Intermediate</option>
-                    <option>Expert</option>
-                  </select>
-
-                  <!-- button to initiate filtering -->
                   <button type="button" class="btn btn-primary" onclick="filterCandidates()">Filter</button>
 
-                  <!-- List of candidates -->
                   <ul class="list-group" id="candidatesList">
-                    <!-- Candidate items will be injected here -->
                   </ul>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <button type="submit" class="btn btn-primary btn-lg btn-block text-white btn-search"><span
+                  <button type="button" onclick="searchListing()"
+                    class="btn btn-primary btn-lg btn-block text-white btn-search"><span
                       class="icon-search icon mr-2"></span>Search Job</button>
                 </div>
               </div>
@@ -196,8 +158,6 @@
               <div class="card-body">
                 <h5 class="card-title" id="modalJobTitle"></h5>
                 <p class="card-text" id="modalJobDescription"></p>
-                <!-- Include other job details here -->
-                Hi
               </div>
             </div>
           </div>
@@ -228,11 +188,14 @@
   <!-- SCRIPTS -->
 
   <script>
+    var listings
+    var skillsFilter = []
+
     async function fetchListings() {
       try {
-        const res = await fetch('http://localhost:5002/role-listings');
-        const data = await res.json();
-        console.log(data.data.listing)
+        const res = await fetch('http://localhost:5002/role-listings')
+        const data = await res.json()
+        listings = data.data.listing
         for (let postObj of data.data.listing) {
           document.getElementById("jobListings").innerHTML += `
             <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id})">
@@ -292,20 +255,89 @@
       }
     }
 
+    async function fetchSkills() {
+      try {
+        const res = await fetch('http://localhost:5001/skills')
+        const data = await res.json()
+        if (data.data.skill.length != 0) {
+          var selectSkills = document.getElementById("skillsSelect")
+          for (skill of data.data.skill) {
+            selectSkills.innerHTML += `
+              <option value="${skill.skill_id}">${skill.skill_name}</option>
+            `
+          }
+          document.getElementById("skillsSelect").addEventListener("change", function () {
+            skillsFilter = Array.from(selectSkills.selectedOptions).map(option => option.value)
+          })
+        }
+      } catch (err) {
+        console.error('An error occured:', err)
+      }
+    }
 
     fetchListings()
+    fetchSkills()
 
     function showModal(jobId) {
       fetchRole(jobId).then(role => {
         const jobTitleElement = document.getElementById('modalJobTitle');
         const jobDescriptionElement = document.getElementById('modalJobDescription');
-        console.log(role)
         jobTitleElement.textContent = role.role_name;
         jobDescriptionElement.textContent = role.role_description; // Use appropriate field from the role object
 
         // Show the modal
         $('#jobModal').modal('show');
       });
+    }
+
+   async function searchListing() {
+      var searchVal = document.getElementById("search").value
+      var filteredListings = listings.filter(function (l) {
+        return l.role_listing_desc.toLowerCase().includes(searchVal.toLowerCase())
+      })
+
+      if (skillsFilter.length != 0) {
+        try {
+          for (var i = 0; i < filteredListings.length; i++) {
+            var listing = filteredListings[i]
+            const res = await fetch('http://localhost:5001/skills/role/' + listing.role_id)
+            const data = await res.json()
+            var toRemove = true
+            if (data.skills.length != 0) {
+              for (skill of data.skills) {
+                if (skillsFilter.includes(skill.skill_id.toString())) {
+                  toRemove = false
+                }
+              }
+            }
+            if (toRemove) {
+              filteredListings.splice(i--, 1)
+            }
+          }
+        } catch (err) {
+          console.error(err)
+        }
+      }
+
+      document.getElementById("jobListings").innerHTML = ''
+      for (let listing of filteredListings) {
+        document.getElementById("jobListings").innerHTML += `
+            <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${listing.role_id}" onclick="showModal(${listing.role_id})">
+              <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
+                <div class="job-listing-logo">
+                  ${listing.role_id}
+                </div>
+                <div id="${listing.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0">
+                  <h2>${listing.role_listing_desc}</h2>
+                </div>
+                <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
+                  Closing on: ${listing.role_listing_close} 
+                </div>
+              </div>
+            </li>
+          `
+        getBadges(listing.role_id)
+      }
     }
     //  filter candidates based on selected skills and level
     function filterCandidates() {
