@@ -165,6 +165,38 @@
       </div>
     </div>
 
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Edit Job Listing</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Form for editing role listing details -->
+            <form id="editForm">
+              <!-- Add form fields for editing role details (e.g., name, description, etc.) -->
+              <!-- For example: -->
+              <div class="form-group">
+                <label for="editRoleDescription">Role Description:</label>
+                <textarea class="form-control" id="editRoleDescription" rows="4"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="closing_date" class="form-label">Closing Date</label>
+                <input type="date" class="form-control" id="closing_date" name="closing_date" required />
+              </div>
+              <!-- Add more form fields as needed -->
+
+              <button type="button" class="btn btn-primary" onclick="updateRoleListing()">Update Listing</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <footer class="site-footer">
 
@@ -198,17 +230,18 @@
         listings = data.data.listing
         for (let postObj of data.data.listing) {
           document.getElementById("jobListings").innerHTML += `
-            <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id})">
+            <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
               <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
                 <div class="job-listing-logo">
                   ${postObj.role_id}
                 </div>
-                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0">
+                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id})">
                   <h2>${postObj.role_listing_desc}</h2>
                 </div>
                 <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
                   Closing on: ${postObj.role_listing_close} 
                 </div>
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${postObj.role_id})">Edit</button>
               </div>
             </li>
           `
@@ -285,12 +318,48 @@
         jobTitleElement.textContent = role.role_name;
         jobDescriptionElement.textContent = role.role_description; // Use appropriate field from the role object
 
-        // Show the modal
         $('#jobModal').modal('show');
       });
     }
 
-   async function searchListing() {
+    function openEditModal(roleId) {
+      window.currentRoleId = roleId
+      const role = listings.find(item => item.role_id === roleId)
+      document.getElementById("editRoleDescription").value = role.role_listing_desc
+      document.getElementById("closing_date").value = role.role_listing_close
+    }
+
+    async function updateRoleListing() {
+      // Get updated values from the form fields
+      const updatedRoleDescription = document.getElementById("editRoleDescription").value;
+      const closing_date = document.getElementById("closing_date").value;
+      // Get the role ID of the listing being edited (you can store this value when opening the modal)
+      const roleId = window.currentRoleId/* Get the role ID */
+
+      // Update the role listing in the listings array
+      const role = listings.find(item => item.role_id === roleId);
+      const toUpdate = {
+        "role_listing_desc": updatedRoleDescription,
+        "role_listing_close": closing_date
+      }
+
+      try {
+        await fetch('http://localhost:5002/role-listings/' + role.role_listing_id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(toUpdate)
+        })
+      } catch (error) {
+        console.error(err)
+      }
+      // Close the modal
+      $('#editModal').modal('hide');
+    }
+
+
+    async function searchListing() {
       var searchVal = document.getElementById("search").value
       var filteredListings = listings.filter(function (l) {
         return l.role_listing_desc.toLowerCase().includes(searchVal.toLowerCase())
@@ -339,34 +408,7 @@
         getBadges(listing.role_id)
       }
     }
-    //  filter candidates based on selected skills and level
-    function filterCandidates() {
-      var selectedSkills = $('#skillsSelect').val();
-      var selectedLevel = $('#levelSelect').val();
 
-      // Assume this function sends a request to the server to filter candidates
-      // and updates the candidates list in the UI
-      updateCandidatesList(selectedSkills, selectedLevel);
-    }
-
-    // Dummy function to represent updating the candidates list
-    function updateCandidatesList(skills, level) {
-      // Clear the current list
-      $('#candidatesList').empty();
-
-      // DUMMY DATA (to be updated!!!)
-      var filteredCandidates = [
-        { name: 'John Doe', skills: ['Python', 'Java'], level: 'Beginner' },
-        { name: 'Jane Smith', skills: ['JavaScript', 'Java'], level: 'Intermediate' },
-        { name: 'Elijah Khor', skills: ['JavaScript', 'Java'], level: 'Expert' },
-        // ... other candidates
-      ];
-
-
-      for (var candidate of filteredCandidates) {
-        $('#candidatesList').append('<li class="list-group-item">' + candidate.name + ' - ' + candidate.skills.join(', ') + ' - ' + candidate.level + '</li>');
-      }
-    }
 
   </script>
 
