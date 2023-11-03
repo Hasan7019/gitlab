@@ -78,15 +78,13 @@ class Role_application(db.Model):
     role_listing = db.relationship('Role_listing', backref='applications', foreign_keys=[role_listing_id])
     staff = db.relationship('Staff', backref='applications', foreign_keys=[staff_id])
 
-    def __init__(self, role_app_id, role_listing_id, staff_id, role_app_status, role_app_ts_create, role_listing, staff):
+    def __init__(self, role_app_id, role_listing_id, staff_id, role_app_status, role_app_ts_create):
         self.role_app_id = role_app_id
         self.role_listing_id = role_listing_id
         self.staff_id = staff_id
         self.role_app_status = role_app_status
         self.role_app_ts_create = role_app_ts_create
-        self.role_listing = role_listing
-        self.staff = staff
-    
+        
     def json(self):
         return {
             "role_app_id": self.role_app_id,
@@ -94,8 +92,6 @@ class Role_application(db.Model):
             "staff_id": self.staff_id,
             "role_app_status": self.role_app_status,
             "role_app_ts_create": self.role_app_ts_create,
-            "role_listing": self.role_listing,
-            "staff": self.staff
         }
 
 class Role_skill(db.Model):
