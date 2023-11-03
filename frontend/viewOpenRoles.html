@@ -222,6 +222,7 @@
   <script>
     var listings
     var skillsFilter = []
+    const userType = "123456789"
 
     async function fetchListings() {
       try {
@@ -241,11 +242,19 @@
                 <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
                   Closing on: ${postObj.role_listing_close} 
                 </div>
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${postObj.role_id})">Edit</button>
+                <div id="button-${postObj.role_listing_id}">
+                </div>
               </div>
             </li>
           `
-          getBadges(postObj.role_id)
+          if (userType == "admin") {
+            document.getElementById("buttonDiv").innerHTML += `
+              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${postObj.role_id})">Edit</button>
+            `
+          } else {
+            await loadButton(postObj.role_listing_id)
+          }
+          await getBadges(postObj.role_id)
         }
         if (data.code === 200) {
           return data.data.listing;
@@ -254,6 +263,66 @@
         }
       } catch (err) {
         console.error('An error occurred:', err);
+      }
+    }
+
+    async function loadButton(role_listing_id) {
+      try {
+        const res = await fetch('http://localhost:5002/role-applications/' + role_listing_id + '/' + userType)
+        const data = await res.json()
+        const application = data.role_application
+        if (data.code === 404) {
+          document.getElementById("button-" + role_listing_id).innerHTML += `
+              <button class="btn btn-primary btn-sm" onclick="apply(${userType}, ${role_listing_id})">Apply</button>
+            `
+        } else if (application.role_app_status == "withdrawn") {
+          document.getElementById("button-" + role_listing_id).innerHTML += `
+              <button class="btn btn-primary btn-sm" onclick="applyAgain(${application.role_app_id})">Apply</button>
+            `
+        }
+        else {
+          document.getElementById("button-" + role_listing_id).innerHTML += `
+            <button class="btn btn-primary btn-sm" onclick="withdraw(${application.role_app_id})">Withdraw</button>
+          `
+        }
+      } catch (err) {
+        console.error('An error occured:', err)
+      }
+    }
+
+    async function withdraw(role_app_id) {
+      const updatedData = {
+        role_app_status: "withdrawn"  
+      }
+
+      try {
+        await fetch('http://localhost:5002/role-applications/' + role_app_id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedData)
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    async function applyAgain(role_app_id) {
+      const updatedData = {
+        role_app_status: "applied"
+      }
+
+      try {
+        await fetch('http://localhost:5002/role-applications/' + role_app_id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedData)
+        })
+      } catch (err) {
+        console.error(err)
       }
     }
 
@@ -270,6 +339,42 @@
         }
       } catch (err) {
         console.error('An error occured:', err)
+      }
+    }
+
+    async function apply(id, role_listing_id) {
+      const applicationData = {
+        role_app_id: await getApplicationId(),
+        role_listing_id: role_listing_id,
+        staff_id: id,
+        role_app_status: "applied",
+        role_app_ts_create: new Date().toISOString().split('T')[0]
+      }
+
+      try {
+        await fetch('http://localhost:5002/role-applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(applicationData)
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    async function getApplicationId() {
+      try {
+        const res = await fetch('http://localhost:5002/role-applications');
+        const data = await res.json();
+        if (data.code == 404) {
+          return 123456
+        } else {
+          return 123456 + data.data.application.length
+        }
+      } catch (err) {
+        console.error('An error occurred:', err);
       }
     }
 

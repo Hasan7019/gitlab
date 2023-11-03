@@ -219,12 +219,28 @@ def filter_role_listings_by_skills():
             "error": "An unexpected error occurred: " + str(e)
         }), 500
 
+@app.route('/role-applications')
+def get_applications():
+    applicationList = Role_application.query.all()
+    if len(applicationList):
+        return jsonify({
+            "code": 200,
+            "data": {
+                "application": [application.json() for application in applicationList]
+            }
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "There are no roles"
+    }), 404
+
 @app.route('/role-applications', methods=["POST"])
 def create_role_application():
     try:
         data = request.get_json()
 
         new_role_application = Role_application(
+            role_app_id=data["role_app_id"],
             role_listing_id=data["role_listing_id"],
             staff_id=data["staff_id"],
             role_app_status=data["role_app_status"],
@@ -238,6 +254,57 @@ def create_role_application():
             "message": "Role application added successfully",
             "role_application": new_role_application.json()
         }), 201
+
+    except KeyError as e:
+        return jsonify({
+            "code": 400,
+            "error": "Missing or invalid key in the request body: " + str(e)
+        }), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "code": 500,
+            "error": "An unexpected error occurred: " + str(e)
+        }), 500
+
+@app.route('/role-applications/<int:role_listing_id>/<int:staff_id>', methods=["GET"])
+def find_role_application(role_listing_id, staff_id):
+    role_application = Role_application.query.filter_by(role_listing_id=role_listing_id, staff_id=staff_id).first()
+
+    if not role_application:
+        return jsonify({
+            "code": 404,
+            "message": "No application found."
+        }), 404
+    
+    return jsonify({
+        "code": 200,
+        "role_application": role_application.json()
+    }), 200
+
+@app.route("/role-applications/<int:role_app_id>", methods=["PUT"])
+def update_role_application(role_app_id):
+    try:
+        data = request.get_json()
+        existing_role_application = Role_application.query.get(role_app_id)
+
+        if not existing_role_application:
+            return jsonify({
+                "code": 404,
+                "error": "Role application not found"
+            }), 404
+
+        for key, value in data.items():
+            setattr(existing_role_application, key, value)
+
+        db.session.commit()
+
+        return jsonify({
+            "code": 200,
+            "message": "Role listing updated successfully", 
+            "role_listing": existing_role_application.json()
+        }), 200
 
     except KeyError as e:
         return jsonify({
