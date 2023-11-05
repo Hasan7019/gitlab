@@ -283,6 +283,21 @@ def find_role_application(role_listing_id, staff_id):
         "role_application": role_application.json()
     }), 200
 
+@app.route('/role-applications/listing/<int:role_listing_id>', methods=["GET"])
+def find_application_by_listing(role_listing_id):
+    role_applications = Role_application.query.filter_by(role_listing_id=role_listing_id)
+
+    if not role_applications:
+        return jsonify({
+            "code": 404,
+            "message": "No applications found."
+        }), 404
+    
+    return jsonify({
+        "code": 200,
+        "role_applications": [application.json() for application in role_applications]
+    }), 200
+
 @app.route("/role-applications/<int:role_app_id>", methods=["PUT"])
 def update_role_application(role_app_id):
     try:
