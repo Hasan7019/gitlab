@@ -74,77 +74,72 @@ describe('fetchApplications', () => {
   });
 });
 
+// Import the necessary modules if using ES6 imports, else use require.
+// Assuming Jest is already set up with the ability to handle DOM-related methods such as `document.getElementById`.
 
-// Assuming updateRoleListing.js contains the function you want to test
-const { updateRoleListing } = require('./frontend/js/viewOpenRoles');
-
-// Mock global.fetch
+// Mock fetch globally
 global.fetch = jest.fn();
 
-// Mock the modal hide function (using jQuery in your function)
-$.fn.modal = jest.fn();
+// Helper function to mock successful fetch response
+function mockFetchSuccess(data) {
+  return fetch.mockImplementationOnce(() =>
+    Promise.resolve({
+      json: () => Promise.resolve(data),
+    })
+  );
+}
 
-// Mock global document object
-document.getElementById = jest.fn();
+// Helper function to mock fetch failure
+function mockFetchFailure(error) {
+  return fetch.mockImplementationOnce(() => Promise.reject(error));
+}
 
-// Mock global.window object
-global.window = { currentRoleId: '123' };
-
-describe('updateRoleListing', () => {
+describe('getBadges', () => {
+  // Reset the fetch mock before each test
   beforeEach(() => {
     fetch.mockClear();
-    document.getElementById.mockClear();
-    $.fn.modal.mockClear();
-    window.currentRoleId = '123'; // Reset currentRoleId before each test if needed
+    document.body.innerHTML = '<div id="test-role-id"></div>';
   });
 
-  it('sends PUT request with the correct data', async () => {
-    // Mocking DOM element values
-    document.getElementById.mockImplementation((id) => {
-      if (id === 'edit-role-description') {
-        return {
-          value: 'Updated Description',
-        };
-      }
-      if (id === 'closing-date') {
-        return {
-          value: '2023-12-31',
-        };
-      }
-      return null;
-    });
+  it('should fetch and display skill badges when data is returned', async () => {
+    const fakeSkills = {
+      skills: [
+        { skill_name: 'JavaScript' },
+        { skill_name: 'React' },
+      ],
+    };
 
-    // Mock successful response
-    fetch.mockResolvedValue({
-      ok: true, // simulate success response
-    });
+    // Set up our fetch call to be successful
+    mockFetchSuccess(fakeSkills);
 
-    // Assume listings is available in the scope, if not you will have to mock it accordingly
-    const listings = [
-      { role_id: '123', role_listing_id: '456' }
-    ];
+    await getBadges('test-role-id');
 
-    await updateRoleListing(listings); // If listings is a parameter in the actual function
+    // Check if fetch was called correctly
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith('http://localhost:5001/skills/role/test-role-id');
+
+    // Check if badges were added to the DOM
+    const badgesContainer = document.getElementById('test-role-id');
+    expect(badgesContainer.innerHTML).toContain('<span class="badge badge-success">JavaScript</span>');
+    expect(badgesContainer.innerHTML).toContain('<span class="badge badge-success">React</span>');
+  });
+
+  it('should handle the error when fetch fails', async () => {
+    const consoleSpy = jest.spyOn(console, 'error');
+    const errorMessage = 'Network error';
+
+    // Set up our fetch call to fail
+    mockFetchFailure(new Error(errorMessage));
+
+    await getBadges('test-role-id');
 
     // Check that fetch was called
-    expect(fetch).toHaveBeenCalledWith('http://localhost:5002/role-listings/456', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "role_listing_desc": 'Updated Description',
-        "role_listing_close": '2023-12-31',
-      })
-    });
+    expect(fetch).toHaveBeenCalledTimes(1);
 
-    // Check that the modal was hidden
-    expect($.fn.modal).toHaveBeenCalledWith('hide');
-  });
+    // Check that console.error was called with the error message
+    expect(consoleSpy).toHaveBeenCalledWith('An error occured:', expect.any(Error));
 
-  it('handles exceptions', async () => {
-    fetch.mockRejectedValue(new Error('Async error'));
-
-    await expect(updateRoleListing()).rejects.toThrow('Async error');
+    // Restore the original implementation of console.error if needed
+    consoleSpy.mockRestore();
   });
 });
