@@ -14,20 +14,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      # configure variables for running db script on aws
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Replace with your AWS region
+
+      - name: Set up MySQL Client
+        run: sudo apt-get install mysql-client
 
       - name: Run SQL Script
-          # Replace with the appropriate AWS RDS endpoint and credentials
         run: |
-          aws rds-data execute-statement --resource-arn arn:aws:rds:us-east-1:123456789012:db:your-db-name --secret-arn arn:aws:secretsmanager:us-east-1:123456789012:secret:your-secret-name --sql "spm.sql"
-        working-directory: ./db
+          # Replace with your database connection details and SQL script path
+          mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ AWS_DB_PASS }} < path/to/your-script.sql
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
