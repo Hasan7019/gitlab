@@ -82,7 +82,7 @@ class Test_staff(unittest.TestCase):
                         "email": "tan_ah_gao@all-in-one.com.sg",
                         "fname": "AH GAO",
                         "lname": "TAN",
-                        "match": true,
+                        "match": True,
                         "matches": 3,
                         "phone": "65-1234-5678",
                         "staff_id": 123456789,

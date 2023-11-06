@@ -50,9 +50,9 @@ class Test_staff(unittest.TestCase):
 
     def test_create_role_2(self):
         result = requests.post("http://127.0.0.1:5002/roles", json={
-            "role_id" = 7,
-            "role_name" = "test role 2",
-            "role_description" = "testing role 2",
+            "role_id" : 7,
+            "role_name" : "test role 2",
+            "role_description" : "testing role 2",
         }).json()
 
         self.assertEqual(result,
