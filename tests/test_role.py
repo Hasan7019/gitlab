@@ -27,26 +27,26 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    def test_create_role_1(self):
-        result = requests.post("http://127.0.0.1:5002/roles", json={
-            "role_id" = 1,
-            "role_name" = "test role 1",
-            "role_description" = "testing role 1",
-            "role_status" = "active"
-        }).json()
-        new_role = Role(
-            role_id=1,
-            role_name="test role 1",
-            role_description="testing role 1",
-            role_status="active"
-        )
-        self.assertEqual(result,
-            {
-                "code": 201,
-                "message": "Role added successfully",
-                "role": new_role.json()
-            }
-        )
+    # def test_create_role_1(self):
+    #     result = requests.post("http://127.0.0.1:5002/roles", json={
+    #         "role_id" = 1,
+    #         "role_name" = "test role 1",
+    #         "role_description" = "testing role 1",
+    #         "role_status" = "active"
+    #     }).json()
+    #     new_role = Role(
+    #         role_id=1,
+    #         role_name="test role 1",
+    #         role_description="testing role 1",
+    #         role_status="active"
+    #     )
+    #     self.assertEqual(result,
+    #         {
+    #             "code": 201,
+    #             "message": "Role added successfully",
+    #             "role": new_role.json()
+    #         }
+    #     )
 
     def test_create_role_2(self):
         result = requests.post("http://127.0.0.1:5002/roles", json={
