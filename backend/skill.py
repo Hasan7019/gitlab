@@ -45,6 +45,19 @@ def find_by_skill_id(skill_id):
         "message": "Skill not found."
     }), 404
 
+@app.route('/skills/staff/<int:staff_id>')
+def find_by_staff_id(staff_id):
+    skills = Skills.query.filter_by(staff_id=staff_id)
+    if skills:
+        return jsonify({
+            "code": 200,
+            "skills": [skill.json() for skill in skills]
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "Skills not found."
+    }), 404
+
 @app.route('/get-lacking-skills/<int:staff_id>/<int:role_listing_id>')
 def get_lacking_skills(staff_id, role_listing_id):
     try:
