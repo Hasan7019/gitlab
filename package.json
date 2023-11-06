@@ -1,0 +1,19 @@
+{
+  "name": "sbrp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wooziecodes/SBRP-G8-T1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wooziecodes/SBRP-G8-T1/issues"
+  },
+  "homepage": "https://github.com/wooziecodes/SBRP-G8-T1#readme"
+}
