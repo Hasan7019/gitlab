@@ -30,8 +30,6 @@
 
 
   <div class="site-wrap">
-    <div class="shadow"
-      style="color: rgba(0, 0, 0, 0.7); position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;"></div>
     <div class="site-mobile-menu site-navbar-target">
       <div class="site-mobile-menu-header">
         <div class="site-mobile-menu-close mt-3">
@@ -42,7 +40,6 @@
     </div>
 
 
-    <!-- NAVBAR -->
     <div id="navbar-placeholder"></div>
 
     <script>
@@ -50,7 +47,6 @@
         $("#navbar-placeholder").load("navbar.html");
       });
     </script>
-    <!-- END NAVBAR -->
 
 
     <section class="section-hero home-section overlay inner-page bg-image"
@@ -68,35 +64,20 @@
                   <input type="text" id="search" class="form-control form-control-lg" placeholder="Search for a role">
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <select class="selectpicker" data-style="btn-white btn-lg" data-width="100%" data-live-search="true"
-                    title="Filter By Date">
-                    <option>Closing Soon</option>
-                    <option>Latest</option>
+                  <select class="selectpicker" id="dateFilterSelect" data-style="btn-white btn-lg" data-width="100%"
+                    data-live-search="true" title="Filter By Date">
+                    <option value="closingSoon">Closing Soon</option>
+                    <option value="latest" selected>Latest</option>
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
                   <select class="selectpicker" multiple data-live-search="true" title="Select Skills" id="skillsSelect">
                   </select>
-
-                  <button type="button" class="btn btn-primary" onclick="filterCandidates()">Filter</button>
-
-                  <ul class="list-group" id="candidatesList">
-                  </ul>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
                   <button type="button" onclick="searchListing()"
                     class="btn btn-primary btn-lg btn-block text-white btn-search"><span
                       class="icon-search icon mr-2"></span>Search Job</button>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12 popular-keywords">
-                  <h3>Trending Keywords:</h3>
-                  <ul class="keywords list-unstyled m-0 p-0">
-                    <li><a href="#" class="">UI Designer</a></li>
-                    <li><a href="#" class="">Python</a></li>
-                    <li><a href="#" class="">Developer</a></li>
-                  </ul>
                 </div>
               </div>
             </form>
@@ -109,36 +90,17 @@
       </a>
     </section>
 
-
     <section class="site-section" id="next">
       <div class="container">
 
         <div class="row mb-5 justify-content-center">
           <div class="col-md-7 text-center">
-            <h2 class="section-title mb-2">43,167 Jobs Listed</h2>
+            <h2 class="section-title mb-2" id="numJobs"></h2>
           </div>
         </div>
 
         <ul class="job-listings mb-5" id="jobListings">
         </ul>
-
-        <div class="row pagination-wrap">
-          <div class="col-md-6 text-center text-md-left mb-4 mb-md-0">
-            <span>Showing 1-7 Of 43,167 Jobs</span>
-          </div>
-          <div class="col-md-6 text-center text-md-right">
-            <div class="custom-pagination ml-auto">
-              <a href="#" class="prev">Prev</a>
-              <div class="d-inline-block">
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-              </div>
-              <a href="#" class="next">Next</a>
-            </div>
-          </div>
-        </div>
 
       </div>
     </section>
@@ -157,7 +119,10 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title" id="modalJobTitle"></h5>
+                <div id="modalBadge"></div>
                 <p class="card-text" id="modalJobDescription"></p>
+                <div id="showLackingSkills">
+                </div>
               </div>
             </div>
           </div>
@@ -222,13 +187,14 @@
   <script>
     var listings
     var skillsFilter = []
-    const userType = "manager"
+    const userType = "123456789"
 
     async function fetchListings() {
       try {
         const res = await fetch('http://localhost:5002/role-listings')
         const data = await res.json()
         listings = data.data.listing
+        document.getElementById("numJobs").innerText = listings.length + " Jobs Listed"
         for (let postObj of data.data.listing) {
           document.getElementById("jobListings").innerHTML += `
             <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
@@ -236,7 +202,7 @@
                 <div class="job-listing-logo">
                   ${postObj.role_id}
                 </div>
-                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id})">
+                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id}); getModalBadges(${postObj.role_id})">
                   <h2>${postObj.role_listing_desc}</h2>
                 </div>
                 <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
@@ -254,7 +220,7 @@
           } else if (userType != "manager") {
             await loadButton(postObj.role_listing_id)
           }
-          await getBadges(postObj.role_id)
+          getBadges(postObj.role_id)
         }
         if (data.code === 200) {
           return data.data.listing;
@@ -342,6 +308,23 @@
       }
     }
 
+    async function getModalBadges(role_id) {
+      try {
+        const res = await fetch('http://localhost:5001/skills/role/' + role_id)
+        const data = await res.json()
+        document.getElementById("modalBadge").innerHTML = ""
+        if (data.skills.length != 0) {
+          for (skill of data.skills) {
+            document.getElementById("modalBadge").innerHTML += `
+              <span class="badge badge-success text-white">${skill.skill_name}</span>
+            `
+          }
+        }
+      } catch (err) {
+        console.error('An error occured:', err)
+      }
+    }
+
     async function apply(id, role_listing_id) {
       const applicationData = {
         role_app_id: await getApplicationId(),
@@ -404,6 +387,7 @@
               <option value="${skill.skill_id}">${skill.skill_name}</option>
             `
           }
+          $(selectSkills).selectpicker('refresh');
           document.getElementById("skillsSelect").addEventListener("change", function () {
             skillsFilter = Array.from(selectSkills.selectedOptions).map(option => option.value)
           })
@@ -416,7 +400,7 @@
     fetchListings()
     fetchSkills()
 
-    function showModal(jobId, listingId) {
+    async function showModal(jobId, listingId) {
       if (userType == "manager") {
         document.getElementById("modal-body").innerHTML = `
           <div class="card">
@@ -447,6 +431,40 @@
           }
         })
       }
+
+      if (userType != "manager" && userType != "admin") {
+        try {
+          document.getElementById("showLackingSkills").innerHTML = `
+            <div id="your-skills">
+              <span>Your skills:</span>
+            </div>
+            <div id="lacking-skills">
+              <span>Lacking skills:</span>
+            </div>
+          `
+          document.getElementById("your-skills").innerHTML = "<span>Your skills:</span>"
+          document.getElementById("lacking-skills").innerHTML = "<span>Lacking skills:</span>"
+          getStaffSkills(userType).then(skills => {
+
+            for (skill of skills) {
+              document.getElementById("your-skills").innerHTML += `
+                  <span class="badge badge-success text-white">${skill}</span>
+                `
+            }
+            getLackingSkills(userType, listingId).then(lackingSkills => {
+              for (lackingSkill of lackingSkills) {
+                document.getElementById("lacking-skills").innerHTML += `
+                  <span class="badge badge-danger text-white">${lackingSkill}</span>
+                `
+              }
+            })
+          })
+
+        } catch (err) {
+          console.error(err)
+        }
+      }
+
       fetchRole(jobId).then(role => {
         const jobTitleElement = document.getElementById('modalJobTitle');
         const jobDescriptionElement = document.getElementById('modalJobDescription');
@@ -470,12 +488,27 @@
       if (data.code == 200) {
         for (skill of data.skills) {
           if (skill.ss_status == 'active') {
-            console.log(skill)
             const res2 = await fetch('http://localhost:5001/skills/' + skill.skill_id)
             const data2 = await res2.json()
             if (data2.code == 200) {
               names.push(data2.skill.skill_name)
             }
+          }
+        }
+      }
+      return names
+    }
+
+    async function getLackingSkills(staff_id, listingId) {
+      const names = []
+      const res = await fetch("http://localhost:5001/get-lacking-skills/" + staff_id + "/" + listingId)
+      const data = await res.json()
+      if (data.code == 200) {
+        for (skill of data.lacking_skills) {
+          const res2 = await fetch('http://localhost:5001/skills/' + skill.skill_id)
+          const data2 = await res2.json()
+          if (data2.code == 200) {
+            names.push(data2.skill.skill_name)
           }
         }
       }
@@ -531,6 +564,14 @@
         return l.role_listing_desc.toLowerCase().includes(searchVal.toLowerCase())
       })
 
+      var dateFilter = document.getElementById("dateFilterSelect").value
+      var currentDate = new Date()
+
+      filteredListings = filteredListings.filter(function (listing) {
+        var closingDate = new Date(listing.role_listing_close);
+        return closingDate >= currentDate;
+      });
+
       if (skillsFilter.length != 0) {
         try {
           for (var i = 0; i < filteredListings.length; i++) {
@@ -554,6 +595,16 @@
         }
       }
 
+      if (dateFilter === "closingSoon") {
+        filteredListings.sort(function (a, b) {
+          return new Date(a.role_listing_close) - new Date(b.role_listing_close);
+        });
+      } else if (dateFilter === "latest") {
+        filteredListings.sort(function (a, b) {
+          return new Date(b.role_listing_ts_create) - new Date(a.role_listing_ts_create);
+        });
+      }
+
       document.getElementById("jobListings").innerHTML = ''
       for (let listing of filteredListings) {
         document.getElementById("jobListings").innerHTML += `
@@ -571,6 +622,13 @@
               </div>
             </li>
           `
+        if (userType == "admin") {
+          document.getElementById("button-" + listing.role_listing_id).innerHTML += `
+              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${listing.role_id})">Edit</button>
+            `
+        } else if (userType != "manager") {
+          await loadButton(listing.role_listing_id)
+        }
         getBadges(listing.role_id)
       }
     }
