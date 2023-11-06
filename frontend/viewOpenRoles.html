@@ -84,10 +84,6 @@
           </div>
         </div>
       </div>
-
-      <a href="#next" class="scroll-button smoothscroll">
-        <span class=" icon-keyboard_arrow_down"></span>
-      </a>
     </section>
 
     <section class="site-section" id="next">
@@ -95,7 +91,7 @@
 
         <div class="row mb-5 justify-content-center">
           <div class="col-md-7 text-center">
-            <h2 class="section-title mb-2" id="numJobs"></h2>
+            <h2 class="section-title mb-2" id="num-jobs"></h2>
           </div>
         </div>
 
@@ -119,9 +115,9 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title" id="modal-job-title"></h5>
-                <div id="modalBadge"></div>
+                <div id="modal-badge"></div>
                 <p class="card-text" id="modal-job-description"></p>
-                <div id="showLackingSkills">
+                <div id="show-lacking-skills">
                 </div>
               </div>
             </div>
@@ -192,7 +188,7 @@
         const res = await fetch('http://localhost:5002/role-listings')
         const data = await res.json()
         listings = data.data.listing
-        document.getElementById("numJobs").innerText = listings.length + " Jobs Listed"
+        document.getElementById("num-jobs").innerText = listings.length + " Jobs Listed"
         for (let postObj of data.data.listing) {
           document.getElementById("job-listings").innerHTML += `
             <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
@@ -310,10 +306,10 @@
       try {
         const res = await fetch('http://localhost:5001/skills/role/' + role_id)
         const data = await res.json()
-        document.getElementById("modalBadge").innerHTML = ""
+        document.getElementById("modal-badge").innerHTML = ""
         if (data.skills.length != 0) {
           for (skill of data.skills) {
-            document.getElementById("modalBadge").innerHTML += `
+            document.getElementById("modal-badge").innerHTML += `
               <span class="badge badge-success text-white">${skill.skill_name}</span>
             `
           }
@@ -432,7 +428,7 @@
 
       if (userType != "manager" && userType != "admin") {
         try {
-          document.getElementById("showLackingSkills").innerHTML = `
+          document.getElementById("show-lacking-skills").innerHTML = `
             <div id="your-skills">
               <span>Your skills:</span>
             </div>
