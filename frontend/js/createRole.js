@@ -1,11 +1,10 @@
-var selectedSkillsId = []
+let selectedSkillsId = []
 const currentUser = 123456788
-async function loadSkills() {
-
+async function loadSkills () {
     try {
-        const res = await fetch('http://localhost:5001/skills');
-        const data = await res.json();
-        for (let skill of data.data.skill) {
+        const res = await fetch('http://localhost:5001/skills')
+        const data = await res.json()
+        for (const skill of data.data.skill) {
             document.getElementById("skillForm").innerHTML += `
             <div>
               <input type="checkbox" id="${skill.skill_id}" name="${skill.skill_name}" value="${skill.skill_id}">
@@ -26,18 +25,18 @@ async function loadSkills() {
                 });
                 const selectedSkillsText = selectedCheckboxes.map(checkbox => checkbox.labels[0].textContent).join(', ')
                 selectedSkills.textContent = selectedSkillsText
-            });
-        });
+            })
+        })
     } catch (err) {
         console.error('An error occurred:', err)
     }
 }
 
-async function loadManagers() {
+async function loadManagers () {
     try {
         const res = await fetch('http://localhost:5000/staff');
         const data = await res.json();
-        for (let staff of data.data.staff) {
+        for (const staff of data.data.staff) {
             document.getElementById("manager").innerHTML += `
             <option value=${staff.staff_id}>${staff.fname} ${staff.lname}</option>
           `
@@ -47,7 +46,7 @@ async function loadManagers() {
     }
 }
 
-async function createListing() {
+async function createListing () {
     const roleTitle = document.getElementById("role-title").value
     const roleDesc = document.getElementById("role-desc").value
     const id = await generateId()
@@ -71,7 +70,7 @@ async function createListing() {
         console.error('An error occurred:', err)
     }
 
-    for (skill of selectedSkillsId) {
+    for (const skill of selectedSkillsId) {
         const roleSkill = {
             role_id: id,
             skill_id: parseInt(skill)
@@ -122,22 +121,22 @@ async function createListing() {
     }
 }
 
-async function generateId() {
+async function generateId () {
     try {
         const res = await fetch('http://localhost:5002/roles')
         const data = await res.json()
-        let id = 234567890 + data.data.role.length + 1;
+        const id = 234567890 + data.data.role.length + 1
         return id
     } catch (err) {
         console.error('An error occurred:', err)
     }
 }
 
-async function generateListingId() {
+async function generateListingId () {
     try {
         const res = await fetch('http://localhost:5002/role-listings')
         const data = await res.json()
-        let id = 123455 + data.data.listing.length + 1;
+        const id = 123455 + data.data.listing.length + 1
         return id
     } catch (err) {
         console.error('An error occurred:', err)
