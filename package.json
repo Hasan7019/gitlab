@@ -18,5 +18,8 @@
   "homepage": "https://github.com/wooziecodes/SBRP-G8-T1#readme",
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
   }
 }

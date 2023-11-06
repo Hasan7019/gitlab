@@ -1,4 +1,9 @@
 // applications.test.js
+
+global.fetch = require('node-fetch'); 
+global.$ = jest.fn(() => ({
+    modal: jest.fn(),
+  }));
 const { applyAgain } = require('./frontend/js/viewOpenRoles');
 
 // Mock fetch before your test cases
