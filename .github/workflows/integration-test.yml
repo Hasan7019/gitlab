@@ -48,17 +48,17 @@ jobs:
 
       - name: run role tests
         run: |
-          test_role.py
+          python test_role.py
         working-directory: ./tests
 
       - name: run skill tests
         run: |
-          test_skill.py
+          python test_skill.py
         working-directory: ./tests
 
       - name: run staff tests
         run: |
-          test_staff.py
+          python test_staff.py
         working-directory: ./tests
 
       - name: Stop and remove containers
