@@ -15,6 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Create Temporary .env File
+        run: |
+          echo "dbURL=${{ secrets.DBURL }}" > .env
+        shell: bash
+        working-directory: ./backend
       # - name: Set up MySQL Client
       #   run: sudo apt-get install mysql-client
 
