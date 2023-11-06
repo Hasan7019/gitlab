@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="css/animate.min.css">
   <link rel="stylesheet" href="css/quill.snow.css">
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body id="top">
@@ -64,14 +63,15 @@
                   <input type="text" id="search" class="form-control form-control-lg" placeholder="Search for a role">
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <select class="selectpicker" id="dateFilterSelect" data-style="btn-white btn-lg" data-width="100%"
+                  <select class="selectpicker" id="date-filter-select" data-style="btn-white btn-lg" data-width="100%"
                     data-live-search="true" title="Filter By Date">
                     <option value="closingSoon">Closing Soon</option>
                     <option value="latest" selected>Latest</option>
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-                  <select class="selectpicker" multiple data-live-search="true" title="Select Skills" id="skillsSelect">
+                  <select class="selectpicker" multiple data-live-search="true" title="Select Skills"
+                    id="skills-select">
                   </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
@@ -99,18 +99,18 @@
           </div>
         </div>
 
-        <ul class="job-listings mb-5" id="jobListings">
+        <ul class="job-listings mb-5" id="job-listings">
         </ul>
 
       </div>
     </section>
 
-    <div class="modal fade" id="jobModal" tabindex="-1" role="dialog" aria-labelledby="jobModalLabel"
+    <div class="modal fade" id="job-modal" tabindex="-1" role="dialog" aria-labelledby="job-modal-label"
       aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="jobModalLabel">Job Listing Information</h5>
+            <h5 class="modal-title" id="job-modal-label">Job Listing Information</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -118,9 +118,9 @@
           <div class="modal-body" id="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title" id="modalJobTitle"></h5>
+                <h5 class="card-title" id="modal-job-title"></h5>
                 <div id="modalBadge"></div>
-                <p class="card-text" id="modalJobDescription"></p>
+                <p class="card-text" id="modal-job-description"></p>
                 <div id="showLackingSkills">
                 </div>
               </div>
@@ -130,28 +130,28 @@
       </div>
     </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    <div class="modal fade" id="edit-modal" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label"
       aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="editModalLabel">Edit Job Listing</h5>
+            <h5 class="modal-title" id="edit-modal-label">Edit Job Listing</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
             <!-- Form for editing role listing details -->
-            <form id="editForm">
+            <form id="edit-form">
               <!-- Add form fields for editing role details (e.g., name, description, etc.) -->
               <!-- For example: -->
               <div class="form-group">
-                <label for="editRoleDescription">Role Description:</label>
-                <textarea class="form-control" id="editRoleDescription" rows="4"></textarea>
+                <label for="edit-role-description">Role Description:</label>
+                <textarea class="form-control" id="edit-role-description" rows="4"></textarea>
               </div>
               <div class="form-group">
-                <label for="closing_date" class="form-label">Closing Date</label>
-                <input type="date" class="form-control" id="closing_date" name="closing_date" required />
+                <label for="closing-date" class="form-label">Closing Date</label>
+                <input type="date" class="form-control" id="closing-date" name="closing-date" required />
               </div>
               <!-- Add more form fields as needed -->
 
@@ -164,7 +164,6 @@
 
 
     <footer class="site-footer">
-
       <div class="row text-center">
         <div class="col-12">
           <p class="copyright"><small>
@@ -177,8 +176,7 @@
             </small></p>
         </div>
       </div>
-  </div>
-  </footer>
+    </footer>
 
   </div>
 
@@ -196,13 +194,13 @@
         listings = data.data.listing
         document.getElementById("numJobs").innerText = listings.length + " Jobs Listed"
         for (let postObj of data.data.listing) {
-          document.getElementById("jobListings").innerHTML += `
+          document.getElementById("job-listings").innerHTML += `
             <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
               <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
                 <div class="job-listing-logo">
                   ${postObj.role_id}
                 </div>
-                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id}); getModalBadges(${postObj.role_id})">
+                <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#job-modal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id}); getModalBadges(${postObj.role_id})">
                   <h2>${postObj.role_listing_desc}</h2>
                 </div>
                 <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
@@ -215,7 +213,7 @@
           `
           if (userType == "admin") {
             document.getElementById("button-" + postObj.role_listing_id).innerHTML += `
-              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${postObj.role_id})">Edit</button>
+              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-modal" onclick="openEditModal(${postObj.role_id})">Edit</button>
             `
           } else if (userType != "manager") {
             await loadButton(postObj.role_listing_id)
@@ -381,14 +379,14 @@
         const res = await fetch('http://localhost:5001/skills')
         const data = await res.json()
         if (data.data.skill.length != 0) {
-          var selectSkills = document.getElementById("skillsSelect")
+          var selectSkills = document.getElementById("skills-select")
           for (skill of data.data.skill) {
             selectSkills.innerHTML += `
               <option value="${skill.skill_id}">${skill.skill_name}</option>
             `
           }
           $(selectSkills).selectpicker('refresh');
-          document.getElementById("skillsSelect").addEventListener("change", function () {
+          document.getElementById("skills-select").addEventListener("change", function () {
             skillsFilter = Array.from(selectSkills.selectedOptions).map(option => option.value)
           })
         }
@@ -405,8 +403,8 @@
         document.getElementById("modal-body").innerHTML = `
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title" id="modalJobTitle"></h5>
-              <p class="card-text" id="modalJobDescription"></p>
+              <h5 class="card-title" id="modal-job-title"></h5>
+              <p class="card-text" id="modal-job-description"></p>
             </div>
           </div>
         `
@@ -466,12 +464,12 @@
       }
 
       fetchRole(jobId).then(role => {
-        const jobTitleElement = document.getElementById('modalJobTitle');
-        const jobDescriptionElement = document.getElementById('modalJobDescription');
+        const jobTitleElement = document.getElementById('modal-job-title');
+        const jobDescriptionElement = document.getElementById('modal-job-description');
         jobTitleElement.textContent = role.role_name;
         jobDescriptionElement.textContent = role.role_description; // Use appropriate field from the role object
 
-        $('#jobModal').modal('show');
+        $('#job-modal').modal('show');
       });
     }
 
@@ -524,14 +522,14 @@
     function openEditModal(roleId) {
       window.currentRoleId = roleId
       const role = listings.find(item => item.role_id === roleId)
-      document.getElementById("editRoleDescription").value = role.role_listing_desc
-      document.getElementById("closing_date").value = new Date(role.role_listing_close).toISOString().split('T')[0]
+      document.getElementById("edit-role-description").value = role.role_listing_desc
+      document.getElementById("closing-date").value = new Date(role.role_listing_close).toISOString().split('T')[0]
     }
 
     async function updateRoleListing() {
       // Get updated values from the form fields
-      const updatedRoleDescription = document.getElementById("editRoleDescription").value;
-      const closing_date = document.getElementById("closing_date").value;
+      const updatedRoleDescription = document.getElementById("edit-role-description").value;
+      const closing_date = document.getElementById("closing-date").value;
       // Get the role ID of the listing being edited (you can store this value when opening the modal)
       const roleId = window.currentRoleId/* Get the role ID */
 
@@ -554,7 +552,7 @@
         console.error(err)
       }
       // Close the modal
-      $('#editModal').modal('hide');
+      $('#edit-modal').modal('hide');
     }
 
 
@@ -564,7 +562,7 @@
         return l.role_listing_desc.toLowerCase().includes(searchVal.toLowerCase())
       })
 
-      var dateFilter = document.getElementById("dateFilterSelect").value
+      var dateFilter = document.getElementById("date-filter-select").value
       var currentDate = new Date()
 
       filteredListings = filteredListings.filter(function (listing) {
@@ -605,10 +603,10 @@
         });
       }
 
-      document.getElementById("jobListings").innerHTML = ''
+      document.getElementById("job-listings").innerHTML = ''
       for (let listing of filteredListings) {
-        document.getElementById("jobListings").innerHTML += `
-            <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#jobModal" style="cursor: pointer" data-id="${listing.role_id}" onclick="showModal(${listing.role_id}, ${listing.role_listing_id})">
+        document.getElementById("job-listings").innerHTML += `
+            <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#job-modal" style="cursor: pointer" data-id="${listing.role_id}" onclick="showModal(${listing.role_id}, ${listing.role_listing_id})">
               <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
                 <div class="job-listing-logo">
                   ${listing.role_id}
@@ -624,7 +622,7 @@
           `
         if (userType == "admin") {
           document.getElementById("button-" + listing.role_listing_id).innerHTML += `
-              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal(${listing.role_id})">Edit</button>
+              <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-modal" onclick="openEditModal(${listing.role_id})">Edit</button>
             `
         } else if (userType != "manager") {
           await loadButton(listing.role_listing_id)
@@ -635,28 +633,19 @@
 
 
   </script>
-
-
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/jquery.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/isotope.pkgd.min.js"></script>
   <script src="js/stickyfill.min.js"></script>
   <script src="js/jquery.fancybox.min.js"></script>
   <script src="js/jquery.easing.1.3.js"></script>
-
   <script src="js/jquery.waypoints.min.js"></script>
   <script src="js/jquery.animateNumber.min.js"></script>
   <script src="js/owl.carousel.min.js"></script>
   <script src="js/quill.min.js"></script>
-
-
   <script src="js/bootstrap-select.min.js"></script>
-
   <script src="js/custom.js"></script>
-
-
-
 </body>
 
 </html>
