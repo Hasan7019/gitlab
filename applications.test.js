@@ -143,3 +143,55 @@ describe('getBadges', () => {
     consoleSpy.mockRestore();
   });
 });
+
+// You might need to import the necessary modules and the function itself
+// import getApplicationId from 'the location of your function';
+// If you're using CommonJS, it would be something like:
+// const getApplicationId = require('the location of your function');
+
+// Mock the global.fetch
+global.fetch = jest.fn();
+
+describe('getApplicationId', () => {
+  // Reset the mock before each test
+  beforeEach(() => {
+    fetch.mockClear();
+  });
+
+  it('returns default id when server responds with code 404', async () => {
+    fetch.mockResolvedValueOnce({
+      json: () => Promise.resolve({ code: 404 }),
+    });
+
+    const id = await getApplicationId();
+    expect(id).toEqual(123456);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith('http://localhost:5002/role-applications');
+  });
+
+  it('returns incremented id when server responds with application data', async () => {
+    const mockApplicationData = {
+      data: {
+        application: ['app1', 'app2', 'app3'] // mock existing applications
+      }
+    };
+    fetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApplicationData),
+    });
+
+    const id = await getApplicationId();
+    expect(id).toEqual(123456 + mockApplicationData.data.application.length);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith('http://localhost:5002/role-applications');
+  });
+
+  it('handles fetch failure gracefully', async () => {
+    fetch.mockRejectedValueOnce(new Error('fake error'));
+
+    const consoleSpy = jest.spyOn(console, 'error');
+    const id = await getApplicationId();
+    expect(consoleSpy).toHaveBeenCalledWith('An error occurred:', new Error('fake error'));
+    expect(id).toBeUndefined();
+    consoleSpy.mockRestore();
+  });
+});

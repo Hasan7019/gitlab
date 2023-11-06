@@ -450,6 +450,7 @@ async function searchListing() {
 module.exports = {
   applyAgain,
   fetchApplications,
-  getBadges
+  getApplicationId
+
   
 };
