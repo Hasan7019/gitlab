@@ -21,7 +21,7 @@ jobs:
       - name: Run SQL Script
         run: |
           # Replace with your database connection details and SQL script path
-          mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ AWS_DB_PASS }} < path/to/your-script.sql
+          mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ AWS_DB_PASS }} < ./db/spm.sql
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
