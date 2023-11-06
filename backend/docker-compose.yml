@@ -1,0 +1,29 @@
+version: "3.10.0"
+
+services:
+  role:
+    build:
+      context: ./
+      dockerfile: ./role.Dockerfile
+    image: japhethlyh/rolems
+    restart: always
+    ports:
+    - "5002:5002"
+  
+  skill:
+    build:
+      context: ./
+      dockerfile: ./skill.Dockerfile
+    image: japhethlyh/skillms
+    restart: always
+    ports: 
+    - "5001:5001"
+
+  staff:
+    build:
+      context: ./
+      dockerfile: ./staff.Dockerfile
+    image: japhethlyh/staffms
+    restart: always
+    ports:
+     - "5000:5000"

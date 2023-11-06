@@ -59,8 +59,37 @@ class Test_staff(unittest.TestCase):
                             ]
                 }
             }
+        )
 
-            
+    def test_find_by_skill(self):
+        result = requests.get('http://127.0.0.1:5000/staff/skill/123').json()
+        self.assertEqual(result,
+            {
+                "code": 404,
+                "message": "There is no staff."
+            }
+        )
+
+    def test_find_suitable_candidate1(self):
+        result = requests.get("http://127.0.0.1:5000//staff/suitable/234567891").json()
+        self.assertEqual(result,
+            {
+                "code": 200,
+                "data": [
+                    {
+                        "biz_address": "address1",
+                        "dept": "FINANCE",
+                        "email": "tan_ah_gao@all-in-one.com.sg",
+                        "fname": "AH GAO",
+                        "lname": "TAN",
+                        "match": true,
+                        "matches": 3,
+                        "phone": "65-1234-5678",
+                        "staff_id": 123456789,
+                        "sys_role": "staff"
+                    }
+                ]
+            }
         )
 
     
