@@ -1,5 +1,5 @@
 // applications.test.js
-const { applyAgain } = require('frontend/viewOpenRoles.html');
+const { applyAgain } = require('./frontend/js/viewOpenRoles');
 
 // Mock fetch before your test cases
 global.fetch = jest.fn(() => Promise.resolve({
