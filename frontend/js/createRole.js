@@ -1,11 +1,11 @@
-let selectedSkillsId = []
+const selectedSkillsId = []
 const currentUser = 123456788
 async function loadSkills () {
     try {
         const res = await fetch('http://localhost:5001/skills')
         const data = await res.json()
         for (const skill of data.data.skill) {
-            document.getElementById("skillForm").innerHTML += `
+            document.getElementById("skill-form").innerHTML += `
             <div>
               <input type="checkbox" id="${skill.skill_id}" name="${skill.skill_name}" value="${skill.skill_id}">
               <label for="${skill.skill_id}">${skill.skill_name}</label>
@@ -22,7 +22,7 @@ async function loadSkills () {
                         selectedSkillsId.push(checkbox.value)
                     }
                     return checkbox.checked
-                });
+                })
                 const selectedSkillsText = selectedCheckboxes.map(checkbox => checkbox.labels[0].textContent).join(', ')
                 selectedSkills.textContent = selectedSkillsText
             })
@@ -34,8 +34,8 @@ async function loadSkills () {
 
 async function loadManagers () {
     try {
-        const res = await fetch('http://localhost:5000/staff');
-        const data = await res.json();
+        const res = await fetch('http://localhost:5000/staff')
+        const data = await res.json()
         for (const staff of data.data.staff) {
             document.getElementById("manager").innerHTML += `
             <option value=${staff.staff_id}>${staff.fname} ${staff.lname}</option>

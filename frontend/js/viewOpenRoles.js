@@ -54,7 +54,7 @@ async function loadButton (roleListingId) {
       document.getElementById("button-" + roleListingId).innerHTML += `
           <button class="btn btn-primary btn-sm" onclick="apply(${userType}, ${roleListingId})">Apply</button>
         `
-    } else if (application.role_app_status == "withdrawn") {
+    } else if (application.role_app_status === "withdrawn") {
       document.getElementById("button-" + roleListingId).innerHTML += `
           <button class="btn btn-primary btn-sm" onclick="applyAgain(${application.role_app_id})">Apply</button>
         `
@@ -69,7 +69,7 @@ async function loadButton (roleListingId) {
   }
 }
 
-async function withdraw(roleAppId) {
+async function withdraw (roleAppId) {
   const updatedData = {
     role_app_status: "withdrawn"
   }
@@ -87,7 +87,7 @@ async function withdraw(roleAppId) {
   }
 }
 
-async function applyAgain(roleAppId) {
+async function applyAgain (roleAppId) {
   const updatedData = {
     role_app_status: "applied"
   }
@@ -105,12 +105,12 @@ async function applyAgain(roleAppId) {
   }
 }
 
-async function getBadges(roleId) {
+async function getBadges (roleId) {
   try {
     const res = await fetch('http://localhost:5001/skills/role/' + roleId)
     const data = await res.json()
-    if (data.skills.length != 0) {
-      for (skill of data.skills) {
+    if (data.skills.length !== 0) {
+      for (const skill of data.skills) {
         document.getElementById(roleId).innerHTML += `
           <span class="badge badge-success">${skill.skill_name}</span>
         `
@@ -121,12 +121,12 @@ async function getBadges(roleId) {
   }
 }
 
-async function getModalBadges(roleId) {
+async function getModalBadges (roleId) {
   try {
     const res = await fetch('http://localhost:5001/skills/role/' + roleId)
     const data = await res.json()
     document.getElementById("modal-badge").innerHTML = ""
-    if (data.skills.length != 0) {
+    if (data.skills.length !== 0) {
       for (const skill of data.skills) {
         document.getElementById("modal-badge").innerHTML += `
           <span class="badge badge-success text-white">${skill.skill_name}</span>
@@ -162,7 +162,7 @@ async function apply (id, roleListingId) {
 
 async function getApplicationId () {
   try {
-    const res = await fetch('http://localhost:5002/role-applications');
+    const res = await fetch('http://localhost:5002/role-applications')
     const data = await res.json()
     if (data.code === 404) {
       return 123456
@@ -193,8 +193,8 @@ async function fetchSkills () {
   try {
     const res = await fetch('http://localhost:5001/skills')
     const data = await res.json()
-    if (data.data.skill.length != 0) {
-      var selectSkills = document.getElementById("skills-select")
+    if (data.data.skill.length !== 0) {
+      const selectSkills = document.getElementById("skills-select")
       for (const skill of data.data.skill) {
         selectSkills.innerHTML += `
           <option value="${skill.skill_id}">${skill.skill_name}</option>
@@ -258,14 +258,13 @@ async function showModal (jobId, listingId) {
       document.getElementById("your-skills").innerHTML = "<span>Your skills:</span>"
       document.getElementById("lacking-skills").innerHTML = "<span>Lacking skills:</span>"
       getStaffSkills(userType).then(skills => {
-
-        for (skill of skills) {
+        for (const skill of skills) {
           document.getElementById("your-skills").innerHTML += `
               <span class="badge badge-success text-white">${skill}</span>
             `
         }
         getLackingSkills(userType, listingId).then(lackingSkills => {
-          for (lackingSkill of lackingSkills) {
+          for (const lackingSkill of lackingSkills) {
             document.getElementById("lacking-skills").innerHTML += `
               <span class="badge badge-danger text-white">${lackingSkill}</span>
             `
@@ -294,13 +293,13 @@ async function getStaffName (staffId) {
   return data.staff.fname + " " + data.staff.lname
 }
 
-async function getStaffSkills(staffId) {
-  let names = []
+async function getStaffSkills (staffId) {
+  const names = []
   const res = await fetch('http://localhost:5001/skills/staff/' + staffId)
   const data = await res.json()
-  if (data.code == 200) {
+  if (data.code === 200) {
     for (const skill of data.skills) {
-      if (skill.ss_status == 'active') {
+      if (skill.ss_status === 'active') {
         const res2 = await fetch('http://localhost:5001/skills/' + skill.skill_id)
         const data2 = await res2.json()
         if (data2.code === 200) {
@@ -317,10 +316,10 @@ async function getLackingSkills (staffId, listingId) {
   const res = await fetch("http://localhost:5001/get-lacking-skills/" + staffId + "/" + listingId)
   const data = await res.json()
   if (data.code === 200) {
-    for (skill of data.lacking_skills) {
+    for (const skill of data.lacking_skills) {
       const res2 = await fetch('http://localhost:5001/skills/' + skill.skill_id)
       const data2 = await res2.json()
-      if (data2.code == 200) {
+      if (data2.code === 200) {
         names.push(data2.skill.skill_name)
       }
     }
@@ -343,13 +342,13 @@ function openEditModal (roleId) {
 
 async function updateRoleListing () {
   const updatedRoleDescription = document.getElementById("edit-role-description").value
-  const closing_date = document.getElementById("closing-date").value
+  const closingDate = document.getElementById("closing-date").value
   const roleId = window.currentRoleId
 
   const role = listings.find(item => item.role_id === roleId)
   const toUpdate = {
-    "role_listing_desc": updatedRoleDescription,
-    "role_listing_close": closing_date
+    role_listing_desc: updatedRoleDescription,
+    role_listing_close: closingDate
   }
 
   try {
@@ -361,19 +360,18 @@ async function updateRoleListing () {
       body: JSON.stringify(toUpdate)
     })
   } catch (error) {
-    console.error(err)
+    console.error(error)
   }
   $('#edit-modal').modal('hide')
 }
 
-
 async function searchListing () {
-  let searchVal = document.getElementById("search").value
+  const searchVal = document.getElementById("search").value
   let filteredListings = listings.filter(function (l) {
     return l.role_listing_desc.toLowerCase().includes(searchVal.toLowerCase())
   })
 
-  let dateFilter = document.getElementById("date-filter-select").value
+  const dateFilter = document.getElementById("date-filter-select").value
   const currentDate = new Date()
 
   filteredListings = filteredListings.filter(function (listing) {
@@ -381,15 +379,15 @@ async function searchListing () {
     return closingDate >= currentDate
   })
 
-  if (skillsFilter.length != 0) {
+  if (skillsFilter.length !== 0) {
     try {
-      for (var i = 0; i < filteredListings.length; i++) {
-        var listing = filteredListings[i]
+      for (let i = 0; i < filteredListings.length; i++) {
+        const listing = filteredListings[i]
         const res = await fetch('http://localhost:5001/skills/role/' + listing.role_id)
         const data = await res.json()
-        var toRemove = true
-        if (data.skills.length != 0) {
-          for (skill of data.skills) {
+        let toRemove = true
+        if (data.skills.length !== 0) {
+          for (const skill of data.skills) {
             if (skillsFilter.includes(skill.skill_id.toString())) {
               toRemove = false
             }
@@ -415,7 +413,7 @@ async function searchListing () {
   }
 
   document.getElementById("job-listings").innerHTML = ''
-  for (let listing of filteredListings) {
+  for (const listing of filteredListings) {
     document.getElementById("job-listings").innerHTML += `
         <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" data-toggle="modal" data-target="#job-modal" style="cursor: pointer" data-id="${listing.role_id}" onclick="showModal(${listing.role_id}, ${listing.role_listing_id})">
           <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
@@ -431,14 +429,13 @@ async function searchListing () {
           </div>
         </li>
       `
-    if (userType == "admin") {
+    if (userType === "admin") {
       document.getElementById("button-" + listing.role_listing_id).innerHTML += `
           <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-modal" onclick="openEditModal(${listing.role_id})">Edit</button>
         `
-    } else if (userType != "manager") {
+    } else if (userType !== "manager") {
       await loadButton(listing.role_listing_id)
     }
     getBadges(listing.role_id)
   }
 }
-
