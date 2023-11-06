@@ -7,7 +7,7 @@ global.fetch = jest.fn(() => Promise.resolve({
 }));
 
 beforeEach(() => {
-  // clear the mock before each test
+  // clear  mock before each test
   fetch.mockClear();
 });
 
