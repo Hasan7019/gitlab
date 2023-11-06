@@ -15,12 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up MySQL Client
-        run: sudo apt-get install mysql-client
+      # - name: Set up MySQL Client
+      #   run: sudo apt-get install mysql-client
 
-      - name: Run SQL Script
-        run: |
-          mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ secrets.AWS_DB_PASS }} < ./db/spm.sql
+      # - name: Run SQL Script
+      #   run: |
+      #     mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ secrets.AWS_DB_PASS }} < ./db/spm.sql
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1

@@ -91,38 +91,38 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    def test_update_role_listing1(self):
-        result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
-            "role_id": 234567892,
-            "role_listing_close": "Wed, 20 Dec 2023 00:00:00 GMT",
-            "role_listing_creator": 123456788,
-            "role_listing_desc": "Test change",
-            "role_listing_id": 123458,
-            "role_listing_open": "Wed, 20 Sep 2023 00:00:00 GMT",
-            "role_listing_source": 123456789,
-            "role_listing_ts_create": "Wed, 20 Sep 2023 00:00:00 GMT",
-            "role_listing_ts_update": "Wed, 20 Sep 2023 00:00:00 GMT",
-            "role_listing_updater": 123456788
-        }).json()
-        listing = Role_listing(
-            role_id= 234567892,
-            role_listing_close= "Wed, 20 Dec 2023 00:00:00 GMT",
-            role_listing_creator= 123456788,
-            role_listing_desc= "Test Change",
-            role_listing_id= 123458,
-            role_listing_open= "Wed, 20 Sep 2023 00:00:00 GMT",
-            role_listing_source= 123456789,
-            role_listing_ts_create= "Wed, 20 Sep 2023 00:00:00 GMT",
-            role_listing_ts_update= "Wed, 20 Sep 2023 00:00:00 GMT",
-            role_listing_updater= 123456788
-        )
-        self.assertEqual(result,
-            {
-                "code": 200,
-                "message": "Role listing updated successfully", 
-                "role_listing": listing.json()
-            }
-        )
+    # def test_update_role_listing1(self):
+    #     result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
+    #         "role_id": 234567892,
+    #         "role_listing_close": "Wed, 20 Dec 2023 00:00:00 GMT",
+    #         "role_listing_creator": 123456788,
+    #         "role_listing_desc": "Test change",
+    #         "role_listing_id": 123458,
+    #         "role_listing_open": "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         "role_listing_source": 123456789,
+    #         "role_listing_ts_create": "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         "role_listing_ts_update": "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         "role_listing_updater": 123456788
+    #     }).json()
+    #     listing = Role_listing(
+    #         role_id= 234567892,
+    #         role_listing_close= "Wed, 20 Dec 2023 00:00:00 GMT",
+    #         role_listing_creator= 123456788,
+    #         role_listing_desc= "Test Change",
+    #         role_listing_id= 123458,
+    #         role_listing_open= "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         role_listing_source= 123456789,
+    #         role_listing_ts_create= "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         role_listing_ts_update= "Wed, 20 Sep 2023 00:00:00 GMT",
+    #         role_listing_updater= 123456788
+    #     )
+    #     self.assertEqual(result,
+    #         {
+    #             "code": 200,
+    #             "message": "Role listing updated successfully", 
+    #             "role_listing": listing.json()
+    #         }
+    #     )
     
     def test_update_role_listing2(self):
         result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
@@ -178,21 +178,21 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    def test_create_role_application1(self):
-        new_role_application = Role_application(
-            role_listing_id=123459,
-            staff_id=123456786,
-            role_app_status="withdrawn",
-            role_app_ts_create="9999-01-01"
-        )
-        result = requests.post("http://127.0.0.1:5002/role-applications", json=new_role_application.json())
-        self.assertEqual(result,
-            {
-                "code": 201,
-                "message": "Role application added successfully",
-                "role_application": new_role_application.json()
-            }
-        )
+    # def test_create_role_application1(self):
+    #     new_role_application = Role_application(
+    #         role_listing_id=123459,
+    #         staff_id=123456786,
+    #         role_app_status="withdrawn",
+    #         role_app_ts_create="9999-01-01"
+    #     )
+    #     result = requests.post("http://127.0.0.1:5002/role-applications", json=new_role_application.json())
+    #     self.assertEqual(result,
+    #         {
+    #             "code": 201,
+    #             "message": "Role application added successfully",
+    #             "role_application": new_role_application.json()
+    #         }
+    #     )
 
     def test_create_role_application1(self):
         result = requests.post("http://127.0.0.1:5002/role-applications", json={

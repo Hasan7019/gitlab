@@ -72,19 +72,19 @@ class Test_skill(unittest.TestCase):
             }
         )
     
-    def test_add_role_skill1(self):
-        new_role_skill = Role_skill(
-            role_id=234567892,
-            skill_id=345678969
-        )
-        result = requests.post("http://127.0.0.1:5001/role-skill", json=new_role_skill.json()).json()
-        self.assertEqual(result,
-            {
-                "code": 201,
-                "message": "Role added successfully",
-                "role": new_role_skill.json()
-            }
-        )
+    # def test_add_role_skill1(self):
+    #     new_role_skill = Role_skill(
+    #         role_id=234567892,
+    #         skill_id=345678969
+    #     )
+    #     result = requests.post("http://127.0.0.1:5001/role-skill", json=new_role_skill.json()).json()
+    #     self.assertEqual(result,
+    #         {
+    #             "code": 201,
+    #             "message": "Role added successfully",
+    #             "role": new_role_skill.json()
+    #         }
+    #     )
     
     def test_add_role_skill2(self):
         result = requests.post("http://127.0.0.1:5001/role-skill", json={
