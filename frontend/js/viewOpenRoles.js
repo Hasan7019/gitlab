@@ -446,3 +446,8 @@ async function searchListing() {
   }
 }
 
+
+module.exports = {
+  applyAgain,
+  // ... any other functions you want to export
+};
