@@ -121,11 +121,13 @@ def find_suitable_candidates(role_id):
                     else:
                         staff['match'] = False
                     res.append(staff)
-
+        #returns a list of staff objects sorted by relevance
+        #includes fields "matches" an that shows the number of skills matched, and "match" a boolean that shows whether or not the person is a perfect match
         return jsonify({
                 "code": 200,
                 "data": res
             })
+            
     except Exception as e:
             return jsonify({
                 "code": 500,
