@@ -449,6 +449,12 @@ async function searchListing() {
 
 module.exports = {
   applyAgain,
-  fetchApplications
+  fetchApplications,
+  getLackingSkills,
+  openEditModal,
+  getStaffName,
+  getStaffSkills,
+  getApplicationId,
+  withdraw
   // ... any other functions you want to export
 };

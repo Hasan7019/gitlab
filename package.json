@@ -17,6 +17,14 @@
   },
   "homepage": "https://github.com/wooziecodes/SBRP-G8-T1#readme",
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3"
+  },
+  "dependencies": {
+    "jsdom": "^22.1.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
   }
 }
