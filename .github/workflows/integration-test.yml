@@ -1,4 +1,4 @@
-name: Docker Compose Up
+name: Backend testing
 
 on:
   push:
@@ -20,12 +20,26 @@ jobs:
           echo "dbURL=${{ secrets.DBURL }}" > .env
         shell: bash
         working-directory: ./backend
-      # - name: Set up MySQL Client
-      #   run: sudo apt-get install mysql-client
 
-      # - name: Run SQL Script
-      #   run: |
-      #     mysql -h ${{ secrets.AWS_DB_URL }} -u ${{ secrets.AWS_DB_USER }} ${{ secrets.AWS_DB_PASS }} < ./db/spm.sql
+      - name: Set up AWS CLI
+        run: |
+          echo "Setting AWS credentials..."
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Install AWS CLI
+        run: |
+          pip install --upgrade awscli
+        shell: bash
+
+      - name: Run SQL Script
+        run: |
+          # Replace with your RDS connection details
+          aws rds-data execute-statement \
+            --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}YOUR_ACCOUNT_ID:db:SBRP \
+            --sql-file ./db/spm.sql
+        shell: bash
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
