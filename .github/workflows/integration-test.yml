@@ -41,7 +41,7 @@ jobs:
             --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}:db:SBRP \
             --secret-arn arn:aws:secretsmanager:ap-southeast-1:${{ secrets.AWS_SECRET_ID }} \
             --database SBRP \
-            --sql-file db/spm.sql
+            --sql "$(cat db/spm.sql)"
         shell: bash
 
       - name: Log in to Docker Hub
