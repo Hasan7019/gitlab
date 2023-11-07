@@ -29,8 +29,10 @@ jobs:
         shell: bash
 
       - name: Install AWS CLI
-        run: |
-          pip install --upgrade awscli
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
         shell: bash
 
       - name: Run SQL Script
