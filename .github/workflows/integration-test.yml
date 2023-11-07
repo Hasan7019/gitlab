@@ -33,6 +33,8 @@ jobs:
         uses: unfor19/install-aws-cli-action@v1
         with:
           version: 2
+          rootdir: ""
+          workdir: ""
 
       - name: Run SQL Script
         run: |
