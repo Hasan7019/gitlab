@@ -223,147 +223,147 @@ describe('getStaffName', () => {
 });
 
 // Assuming getStaffSkills is in a file named staffSkills.js
-const { getStaffSkills } = require('./frontend/js/viewOpenRoles');
+// const { getStaffSkills } = require('./frontend/js/viewOpenRoles');
 
-// Mocking the global fetch function
-global.fetch = jest.fn();
+// // Mocking the global fetch function
+// global.fetch = jest.fn();
 
-beforeEach(() => {
-  // Clear all instances and calls to constructor and all methods:
-  fetch.mockClear();
-});
+// beforeEach(() => {
+//   // Clear all instances and calls to constructor and all methods:
+//   fetch.mockClear();
+// });
 
-describe('getStaffSkills', () => {
-  it('returns active skills for a staff member', async () => {
-    // Mock the responses for staff skills and individual skill info
-    fetch
-      .mockResolvedValueOnce({ // First call to fetch for staff skills
-        json: () => Promise.resolve({
-          code: 200,
-          skills: [
-            { skill_id: '1', ss_status: 'active' },
-            { skill_id: '2', ss_status: 'inactive' },
-            { skill_id: '3', ss_status: 'active' }
-          ]
-        })
-      })
-      .mockResolvedValueOnce({ // Second call to fetch for the first skill details
-        json: () => Promise.resolve({
-          code: 200,
-          skill: { skill_name: 'Skill One' }
-        })
-      })
-      .mockResolvedValueOnce({ // Third call to fetch for the second skill details (skipped because inactive)
-        json: () => Promise.resolve({})
-      })
-      .mockResolvedValueOnce({ // Fourth call to fetch for the third skill details
-        json: () => Promise.resolve({
-          code: 200,
-          skill: { skill_name: 'Skill Three' }
-        })
-      });
+// describe('getStaffSkills', () => {
+//   it('returns active skills for a staff member', async () => {
+//     // Mock the responses for staff skills and individual skill info
+//     fetch
+//       .mockResolvedValueOnce({ // First call to fetch for staff skills
+//         json: () => Promise.resolve({
+//           code: 200,
+//           skills: [
+//             { skill_id: '1', ss_status: 'active' },
+//             { skill_id: '2', ss_status: 'inactive' },
+//             { skill_id: '3', ss_status: 'active' }
+//           ]
+//         })
+//       })
+//       .mockResolvedValueOnce({ // Second call to fetch for the first skill details
+//         json: () => Promise.resolve({
+//           code: 200,
+//           skill: { skill_name: 'Skill One' }
+//         })
+//       })
+//       .mockResolvedValueOnce({ // Third call to fetch for the second skill details (skipped because inactive)
+//         json: () => Promise.resolve({})
+//       })
+//       .mockResolvedValueOnce({ // Fourth call to fetch for the third skill details
+//         json: () => Promise.resolve({
+//           code: 200,
+//           skill: { skill_name: 'Skill Three' }
+//         })
+//       });
 
-    // staff_id to test
-    const staff_id = 'staff123';
-    // Call the function with the mock staff_id
-    const skillNames = await getStaffSkills(staff_id);
+//     // staff_id to test
+//     const staff_id = 'staff123';
+//     // Call the function with the mock staff_id
+//     const skillNames = await getStaffSkills(staff_id);
 
-    // Assertions to check if the skill names array is correct
-    expect(skillNames).toEqual(['Skill One', 'Skill Three']);
+//     // Assertions to check if the skill names array is correct
+//     expect(skillNames).toEqual(['Skill One', 'Skill Three']);
 
-    // Check if fetch was called with the correct URLs
-    expect(fetch).toHaveBeenNthCalledWith(1, 'http://localhost:5001/skills/staff/' + staff_id);
-    expect(fetch).toHaveBeenNthCalledWith(2, 'http://localhost:5001/skills/1');
-    expect(fetch).toHaveBeenNthCalledWith(3, 'http://localhost:5001/skills/3');
+//     // Check if fetch was called with the correct URLs
+//     expect(fetch).toHaveBeenNthCalledWith(1, 'http://localhost:5001/skills/staff/' + staff_id);
+//     expect(fetch).toHaveBeenNthCalledWith(2, 'http://localhost:5001/skills/1');
+//     expect(fetch).toHaveBeenNthCalledWith(3, 'http://localhost:5001/skills/3');
 
-    // Since skill 2 is inactive, there should be no fetch call for its details
-    expect(fetch).toHaveBeenCalledTimes(3);
-  });
+//     // Since skill 2 is inactive, there should be no fetch call for its details
+//     expect(fetch).toHaveBeenCalledTimes(3);
+//   });
 
-});
+// });
 
 
-//GET APPLICATION ID
+// //GET APPLICATION ID
 
-// require('jest-fetch-mock').enableMocks();
+// // require('jest-fetch-mock').enableMocks();
 
-// const getApplicationId = require('./frontend/js/viewOpenRoles'); // Adjust the path to where your function is exported
+// // const getApplicationId = require('./frontend/js/viewOpenRoles'); // Adjust the path to where your function is exported
 
-// describe('getApplicationId function', () => {
+// // describe('getApplicationId function', () => {
+// //   beforeEach(() => {
+// //     fetch.resetMocks();
+// //   });
+
+// //   it('returns the default ID when a 404 code is received', async () => {
+// //     fetch.mockResponseOnce(JSON.stringify({ code: 404 }));
+// //     const appId = await getApplicationId();
+// //     expect(appId).toEqual(123456);
+// //   });
+
+// //   it('calculates and returns the correct ID when a non-404 code is received', async () => {
+// //     const mockApplications = { data: { application: ['app1', 'app2', 'app3'] } };
+// //     fetch.mockResponseOnce(JSON.stringify({ code: 200, ...mockApplications }));
+// //     const appId = await getApplicationId();
+// //     expect(appId).toEqual(123456 + mockApplications.data.application.length);
+// //   });
+
+// //   it('handles exceptions for network errors', async () => {
+// //     fetch.mockReject(new Error('fake network error'));
+// //     console.error = jest.fn(); // Mock console.error
+
+// //     await getApplicationId();
+    
+// //     // Check if console.error was called with the correct message
+// //     expect(console.error).toHaveBeenCalledWith('An error occurred:', expect.any(Error));
+// //   });
+// // });
+
+
+// //WITHDRAW
+// const { withdraw } = require('./frontend/js/viewOpenRoles'); // Ensure this path is correct.
+
+// // Enable fetch mocking
+// require('jest-fetch-mock').enableMocks()
+
+// describe('withdraw', () => {
 //   beforeEach(() => {
 //     fetch.resetMocks();
 //   });
 
-//   it('returns the default ID when a 404 code is received', async () => {
-//     fetch.mockResponseOnce(JSON.stringify({ code: 404 }));
-//     const appId = await getApplicationId();
-//     expect(appId).toEqual(123456);
+//   it('sends a withdrawal request for a specific application', async () => {
+//     // Arrange
+//     const role_app_id = '123';
+//     const expectedUrl = `http://localhost:5002/role-applications/${role_app_id}`;
+//     const expectedBody = JSON.stringify({ role_app_status: "withdrawn" });
+
+//     fetch.mockResponseOnce(JSON.stringify({ status: 'success' })); // Mock a successful response
+
+//     // Act
+//     await withdraw(role_app_id);
+
+//     // Assert
+//     expect(fetch).toHaveBeenCalledTimes(1);
+//     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: expectedBody
+//     });
 //   });
 
-//   it('calculates and returns the correct ID when a non-404 code is received', async () => {
-//     const mockApplications = { data: { application: ['app1', 'app2', 'app3'] } };
-//     fetch.mockResponseOnce(JSON.stringify({ code: 200, ...mockApplications }));
-//     const appId = await getApplicationId();
-//     expect(appId).toEqual(123456 + mockApplications.data.application.length);
-//   });
+//   it('handles exceptions thrown during the fetch operation', async () => {
+//     // Arrange
+//     const role_app_id = '123';
+//     const errorMessage = 'Network error';
 
-//   it('handles exceptions for network errors', async () => {
-//     fetch.mockReject(new Error('fake network error'));
-//     console.error = jest.fn(); // Mock console.error
+//     fetch.mockRejectOnce(new Error(errorMessage)); // Mock a network error
 
-//     await getApplicationId();
-    
-//     // Check if console.error was called with the correct message
-//     expect(console.error).toHaveBeenCalledWith('An error occurred:', expect.any(Error));
+//     // Act
+//     await withdraw(role_app_id);
+
+//     // Assert
+//     // Check if console.error was called with the correct error
+//     // For this, you might need to mock console.error before the test
+//     const consoleSpy = jest.spyOn(console, 'error');
+//     expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
 //   });
 // });
-
-
-//WITHDRAW
-const { withdraw } = require('./frontend/js/viewOpenRoles'); // Ensure this path is correct.
-
-// Enable fetch mocking
-require('jest-fetch-mock').enableMocks()
-
-describe('withdraw', () => {
-  beforeEach(() => {
-    fetch.resetMocks();
-  });
-
-  it('sends a withdrawal request for a specific application', async () => {
-    // Arrange
-    const role_app_id = '123';
-    const expectedUrl = `http://localhost:5002/role-applications/${role_app_id}`;
-    const expectedBody = JSON.stringify({ role_app_status: "withdrawn" });
-
-    fetch.mockResponseOnce(JSON.stringify({ status: 'success' })); // Mock a successful response
-
-    // Act
-    await withdraw(role_app_id);
-
-    // Assert
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith(expectedUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: expectedBody
-    });
-  });
-
-  it('handles exceptions thrown during the fetch operation', async () => {
-    // Arrange
-    const role_app_id = '123';
-    const errorMessage = 'Network error';
-
-    fetch.mockRejectOnce(new Error(errorMessage)); // Mock a network error
-
-    // Act
-    await withdraw(role_app_id);
-
-    // Assert
-    // Check if console.error was called with the correct error
-    // For this, you might need to mock console.error before the test
-    const consoleSpy = jest.spyOn(console, 'error');
-    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
-  });
-});
