@@ -38,7 +38,8 @@ jobs:
         run: |
           # Replace with your RDS connection details
           aws rds-data execute-statement \
-            --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}YOUR_ACCOUNT_ID:db:SBRP \
+            --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}:db:SBRP \
+            --secret-arn arn:aws:secretsmanager:ap-southeast-1:${{ secrets.AWS_SECRET_ID }} \
             --sql-file ./db/spm.sql
         shell: bash
 
