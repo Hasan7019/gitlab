@@ -99,9 +99,7 @@ class Test_staff(unittest.TestCase):
         self.assertEqual(result,
             {
                 "code": 200,
-                "data": [
-                    
-                ]
+                "data": []
             }
         )
 

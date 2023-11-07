@@ -6,6 +6,7 @@ services:
       context: ./
       dockerfile: ./role.Dockerfile
     image: japhethlyh/rolems
+    networks: [SBRP]
     restart: always
     ports:
     - "5002:5002"
@@ -15,6 +16,7 @@ services:
       context: ./
       dockerfile: ./skill.Dockerfile
     image: japhethlyh/skillms
+    networks: [SBRP]
     restart: always
     ports: 
     - "5001:5001"
@@ -24,6 +26,10 @@ services:
       context: ./
       dockerfile: ./staff.Dockerfile
     image: japhethlyh/staffms
+    networks: [SBRP]
     restart: always
     ports:
      - "5000:5000"
+
+networks:
+  SBRP:
