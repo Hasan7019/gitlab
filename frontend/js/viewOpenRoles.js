@@ -1,7 +1,13 @@
+if (localStorage.getItem("userType") === "") {
+  window.location.href = "login.html";
+}
+
 let listings
 let skillsFilter = []
-const userType = "123456789"
-
+const userType = localStorage.getItem("userType")
+$(function () {
+  $("#navbar-placeholder").load("navbar.html");
+});
 async function fetchListings () {
   try {
     const res = await fetch('http://localhost:5002/role-listings')
@@ -10,12 +16,12 @@ async function fetchListings () {
     document.getElementById("num-jobs").innerText = listings.length + " Jobs Listed"
     for (const postObj of data.data.listing) {
       document.getElementById("job-listings").innerHTML += `
-        <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
+        <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id}); getModalBadges(${postObj.role_id})">
           <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4 text-dark">
             <div class="job-listing-logo">
               ${postObj.role_id}
             </div>
-            <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#job-modal" style="cursor: pointer" data-id="${postObj.role_id}" onclick="showModal(${postObj.role_id}, ${postObj.role_listing_id}); getModalBadges(${postObj.role_id})">
+            <div id="${postObj.role_id}" class="job-listing-position custom-width w-50 mb-3 mb-sm-0" data-toggle="modal" data-target="#job-modal" style="cursor: pointer" data-id="${postObj.role_id}">
               <h2>${postObj.role_listing_desc}</h2>
             </div>
             <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
@@ -26,7 +32,7 @@ async function fetchListings () {
           </div>
         </li>
       `
-      if (userType === "admin") {
+      if (userType === "hr") {
         document.getElementById("button-" + postObj.role_listing_id).innerHTML += `
           <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-modal" onclick="openEditModal(${postObj.role_id})">Edit</button>
         `
@@ -245,7 +251,7 @@ async function showModal (jobId, listingId) {
     })
   }
 
-  if (userType !== "manager" && userType !== "admin") {
+  if (userType !== "manager" && userType !== "hr") {
     try {
       document.getElementById("show-lacking-skills").innerHTML = `
         <div id="your-skills">
@@ -426,10 +432,12 @@ async function searchListing () {
             <div class="job-listing-location mb-3 mb-sm-0 custom-width w-25">
               Closing on: ${listing.role_listing_close} 
             </div>
+            <div id="button-${listing.role_listing_id}">
+            </div>
           </div>
         </li>
       `
-    if (userType === "admin") {
+    if (userType === "hr") {
       document.getElementById("button-" + listing.role_listing_id).innerHTML += `
           <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-modal" onclick="openEditModal(${listing.role_id})">Edit</button>
         `

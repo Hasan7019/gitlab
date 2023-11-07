@@ -50,6 +50,20 @@ def find_by_staff_id(staff_id):
         }
     ), 404
 
+@app.route("/staff/email/<string:email>")
+def find_by_email(email):
+    staff = Staff.query.filter_by(email=email).first()
+    if staff:
+        return jsonify({
+            "code": 200,
+            "staff": staff.json()
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "Staff not found."
+    }), 404
+
+
 @app.route("/staff/skill")
 def get_staff_skills():
     try: 
