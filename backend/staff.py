@@ -96,8 +96,8 @@ def find_suitable_candidates(role_id):
         #     "skill_name": "Python Programming",
         #     "skill_status": "active"
         # }
-        skills_needed = requests.get(f"http://127.0.0.1:5001/skills/role/{role_id}").json()['skills']
-        skills = requests.get("http://127.0.0.1:5000/staff/skill").json()['data']
+        skills_needed = requests.get(f"http://host.docker.internal:5001/skills/role/{role_id}").json()['skills']
+        skills = requests.get("http://host.docker.internal:5000/staff/skill").json()['data']
         suitable = {}
         for needed in skills_needed:
             for staff in skills:
@@ -110,7 +110,7 @@ def find_suitable_candidates(role_id):
         for staff_id in suitable:
             temp.append((staff_id, suitable[staff_id]))
         sorted_temp = sorted(temp, key=lambda x:x[1])
-        staffs = requests.get("http://127.0.0.1:5000/staff").json()['data']['staff']
+        staffs = requests.get("http://host.docker.internal:5000/staff").json()['data']['staff']
         res = []
         for i in sorted_temp:
             for staff in staffs:

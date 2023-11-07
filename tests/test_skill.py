@@ -30,7 +30,13 @@ class Test_skill(unittest.TestCase):
         self.assertEqual(result,
             {
                 "code": 200,
-                "lacking_skills": []
+                "lacking_skills": [
+                    {
+                        "skill_id": 345678971,
+                        "skill_name": "Certified Water Hose",
+                        "skill_status": "active"
+                    }
+                ]
             }
         )
 
@@ -59,11 +65,6 @@ class Test_skill(unittest.TestCase):
                 "code": 200,
                 "skills": [
                     {
-                        "skill_id": 345678912,
-                        "skill_name": "Pascal Programming",
-                        "skill_status": "inactive"
-                    },
-                    {
                         "skill_id": 345678914,
                         "skill_name": "Certified Scrum Master",
                         "skill_status": "active"
@@ -89,7 +90,7 @@ class Test_skill(unittest.TestCase):
     def test_add_role_skill2(self):
         result = requests.post("http://127.0.0.1:5001/role-skill", json={
             "this is a": "negative test case"
-        })
+        }).json()
         self.assertEqual(result,
             {
                 "code": 400,

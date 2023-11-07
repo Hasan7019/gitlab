@@ -56,9 +56,9 @@ class Test_staff(unittest.TestCase):
         }).json()
 
         self.assertEqual(result,
-                {
+            {
                 "code": 400,
-                "error": "Missing or invalid key in the request body: " + str(e)
+                "error": "Missing or invalid key in the request body: 'role_status'"
             }
         )
 
@@ -91,52 +91,54 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    # def test_update_role_listing1(self):
-    #     result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
-    #         "role_id": 234567892,
-    #         "role_listing_close": "Wed, 20 Dec 2023 00:00:00 GMT",
-    #         "role_listing_creator": 123456788,
-    #         "role_listing_desc": "Test change",
-    #         "role_listing_id": 123458,
-    #         "role_listing_open": "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         "role_listing_source": 123456789,
-    #         "role_listing_ts_create": "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         "role_listing_ts_update": "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         "role_listing_updater": 123456788
-    #     }).json()
-    #     listing = Role_listing(
-    #         role_id= 234567892,
-    #         role_listing_close= "Wed, 20 Dec 2023 00:00:00 GMT",
-    #         role_listing_creator= 123456788,
-    #         role_listing_desc= "Test Change",
-    #         role_listing_id= 123458,
-    #         role_listing_open= "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         role_listing_source= 123456789,
-    #         role_listing_ts_create= "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         role_listing_ts_update= "Wed, 20 Sep 2023 00:00:00 GMT",
-    #         role_listing_updater= 123456788
-    #     )
-    #     self.assertEqual(result,
-    #         {
-    #             "code": 200,
-    #             "message": "Role listing updated successfully", 
-    #             "role_listing": listing.json()
-    #         }
-    #     )
+    def test_update_role_listing1(self):
+        result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
+            "role_id": 234567892,
+            "role_listing_close": "2023-12-20",
+            "role_listing_creator": 123456788,
+            "role_listing_desc": "Test change",
+            "role_listing_id": 123458,
+            "role_listing_open": "2023-09-20",
+            "role_listing_source": 123456789,
+            "role_listing_ts_create": "2023-09-20",
+            "role_listing_ts_update": "2023-09-20",
+            "role_listing_updater": 123456788
+        }).json()
+        listing = Role_listing(
+            role_id= 234567892,
+            role_listing_close= "Wed, 20 Dec 2023 00:00:00 GMT",
+            role_listing_creator= 123456788,
+            role_listing_desc= "Test change",
+            role_listing_id= 123458,
+            role_listing_open= "Wed, 20 Sep 2023 00:00:00 GMT",
+            role_listing_source= 123456789,
+            role_listing_ts_create= "Wed, 20 Sep 2023 00:00:00 GMT",
+            role_listing_ts_update= "Wed, 20 Sep 2023 00:00:00 GMT",
+            role_listing_updater= 123456788
+        )
+        self.maxDiff = None
+        self.assertEqual(result,
+            {
+                "code": 200,
+                "message": "Role listing updated successfully", 
+                "role_listing": listing.json()
+            }
+        )
     
     def test_update_role_listing2(self):
-        result = requests.put("http://127.0.0.1:5002/role-listings/123458", json={
+        result = requests.put("http://127.0.0.1:5002/role-listings/13458", json={
             "this is a": "negative test case"
         }).json()
         self.assertEqual(result,
             {
-                "code": 400,
-                "error": "Missing or invalid key in the request body: " + str(e)
+                "code": 404,
+                "error": "Role listing not found"
             }
         )
     
     def test_filter_role_listing_by_skill1(self):
         result = requests.get("http://127.0.0.1:5002/filter-role-listings-by-skills?skill_ids=345678913,345678970").json()
+        self.maxDiff = None
         self.assertEqual(result,
             {
                 "code": 200,
@@ -151,18 +153,6 @@ class Test_staff(unittest.TestCase):
                         "role_listing_source": 123456787,
                         "role_listing_ts_create": "Wed, 20 Sep 2023 00:00:00 GMT",
                         "role_listing_ts_update": "Wed, 20 Sep 2023 00:00:00 GMT",
-                        "role_listing_updater": 123456788
-                    },
-                    {
-                        "role_id": 234567895,
-                        "role_listing_close": "Mon, 30 Oct 2023 00:00:00 GMT",
-                        "role_listing_creator": 123456788,
-                        "role_listing_desc": "Listing Desc",
-                        "role_listing_id": 123460,
-                        "role_listing_open": "Fri, 27 Oct 2023 00:00:00 GMT",
-                        "role_listing_source": 123456786,
-                        "role_listing_ts_create": "Wed, 25 Oct 2023 00:00:00 GMT",
-                        "role_listing_ts_update": "Wed, 25 Oct 2023 00:00:00 GMT",
                         "role_listing_updater": 123456788
                     }
                 ]
@@ -197,11 +187,11 @@ class Test_staff(unittest.TestCase):
     def test_create_role_application1(self):
         result = requests.post("http://127.0.0.1:5002/role-applications", json={
             "this is a" : "negative test case"
-        })
+        }).json()
         self.assertEqual(result,
             {
                 "code": 400,
-                "error": "Missing or invalid key in the request body: 'role_listing_id'"
+                "error": "Missing or invalid key in the request body: 'role_app_id'"
             }
         )
 

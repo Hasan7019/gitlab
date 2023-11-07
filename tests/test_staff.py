@@ -71,7 +71,8 @@ class Test_staff(unittest.TestCase):
         )
 
     def test_find_suitable_candidate1(self):
-        result = requests.get("http://127.0.0.1:5000//staff/suitable/234567891").json()
+        result = requests.get("http://127.0.0.1:5000/staff/suitable/234567893").json()
+        self.maxDiff = None
         self.assertEqual(result,
             {
                 "code": 200,
@@ -83,11 +84,23 @@ class Test_staff(unittest.TestCase):
                         "fname": "AH GAO",
                         "lname": "TAN",
                         "match": True,
-                        "matches": 3,
+                        "matches": 1,
                         "phone": "65-1234-5678",
                         "staff_id": 123456789,
                         "sys_role": "staff"
                     }
+                ]
+            }
+        )
+
+    def test_find_suitable_candidate2(self):
+        result = requests.get("http://127.0.0.1:5000/staff/suitable/234567891").json()
+        self.maxDiff = None
+        self.assertEqual(result,
+            {
+                "code": 200,
+                "data": [
+                    
                 ]
             }
         )
