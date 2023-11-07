@@ -33,8 +33,8 @@ jobs:
         uses: unfor19/install-aws-cli-action@v1
         with:
           version: 2
-          rootdir: ""
-          workdir: ""
+          rootdir: "."
+          workdir: "./db"
 
       - name: Run SQL Script
         run: |
@@ -43,7 +43,7 @@ jobs:
             --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}:db:SBRP \
             --secret-arn arn:aws:secretsmanager:ap-southeast-1:${{ secrets.AWS_SECRET_ID }} \
             --database SBRP \
-            --sql "source ./db/spm.sql"
+            --sql "source ./spm.sql"
         shell: bash
 
       - name: Log in to Docker Hub
