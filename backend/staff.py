@@ -104,12 +104,6 @@ def find_by_skill(skill_id):
 @app.route("/staff/suitable/<int:role_id>")
 def find_suitable_candidates(role_id):
     try:
-        #get skills needed for role
-        # {
-        #     "skill_id": 345678913,
-        #     "skill_name": "Python Programming",
-        #     "skill_status": "active"
-        # }
         skills_needed = requests.get(f"http://skill:5001/skills/role/{role_id}").json()['skills']
         skills = requests.get("http://staff:5000/staff/skill").json()['data']
         suitable = {}
@@ -135,8 +129,6 @@ def find_suitable_candidates(role_id):
                     else:
                         staff['match'] = False
                     res.append(staff)
-        #returns a list of staff objects sorted by relevance
-        #includes fields "matches" an that shows the number of skills matched, and "match" a boolean that shows whether or not the person is a perfect match
         return jsonify({
                 "code": 200,
                 "data": res
