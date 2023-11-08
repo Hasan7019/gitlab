@@ -1,0 +1,30 @@
+{
+  "name": "sbrp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wooziecodes/SBRP-G8-T1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wooziecodes/SBRP-G8-T1/issues"
+  },
+  "homepage": "https://github.com/wooziecodes/SBRP-G8-T1#readme",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3"
+  },
+  "dependencies": {
+    "jsdom": "^22.1.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
+}

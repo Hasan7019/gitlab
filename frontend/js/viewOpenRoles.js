@@ -447,3 +447,16 @@ async function searchListing () {
     getBadges(listing.role_id)
   }
 }
+
+
+module.exports = {
+  applyAgain,
+  fetchApplications,
+  getLackingSkills,
+  openEditModal,
+  getStaffName,
+  getStaffSkills,
+  getApplicationId,
+  withdraw
+  // ... any other functions you want to export
+};
