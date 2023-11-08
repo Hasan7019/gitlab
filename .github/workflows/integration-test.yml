@@ -36,15 +36,12 @@ jobs:
           rootdir: "."
           workdir: "./db"
 
+      - name: Install Database Client Tool
+        run: sudo apt-get -y install mysql-client
+
       - name: Run SQL Script
         run: |
-          # Replace with your RDS connection details
-          aws rds-data execute-statement \
-            --resource-arn arn:aws:rds:ap-southeast-1:${{ secrets.CHESTER_ACCOUNT_ID }}:db:SBRP \
-            --secret-arn arn:aws:secretsmanager:ap-southeast-1:${{ secrets.AWS_SECRET_ID }} \
-            --database SBRP \
-            --sql "source ./spm.sql"
-        shell: bash
+          mysql -h ${{ secrets.DB_HOSTNAME }} -u ${{secrets.AWS_DB_USER }} -p ${{ secrets.AWS_DB_PASS }} SBRP < ./db/spm.sql
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
