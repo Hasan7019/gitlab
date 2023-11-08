@@ -4,8 +4,6 @@ name: Backend testing
 on:
   push:
     branches:
-      - main  # Replace with your branch name
-    pull_request:
       - main
 
 jobs:

@@ -16,6 +16,7 @@ class Test_staff(unittest.TestCase):
                 "sys_role": "inactive"
             }
         )
+
     def test_find_123456787(self):
         result = requests.get('http://127.0.0.1:5000/staff/123456787').json()['staff']
         self.assertEqual(result,
@@ -30,6 +31,7 @@ class Test_staff(unittest.TestCase):
                 "sys_role": "manager"
             }
         )
+
     def test_cannot_find(self):
         result = requests.get('http://127.0.0.1:5000/staff/696969').json()
         self.assertEqual(result,
@@ -103,6 +105,5 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    
 if __name__ == '__main__':
     unittest.main()

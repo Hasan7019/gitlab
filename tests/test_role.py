@@ -27,27 +27,6 @@ class Test_staff(unittest.TestCase):
             }
         )
 
-    # def test_create_role_1(self):
-    #     result = requests.post("http://127.0.0.1:5002/roles", json={
-    #         "role_id" = 1,
-    #         "role_name" = "test role 1",
-    #         "role_description" = "testing role 1",
-    #         "role_status" = "active"
-    #     }).json()
-    #     new_role = Role(
-    #         role_id=1,
-    #         role_name="test role 1",
-    #         role_description="testing role 1",
-    #         role_status="active"
-    #     )
-    #     self.assertEqual(result,
-    #         {
-    #             "code": 201,
-    #             "message": "Role added successfully",
-    #             "role": new_role.json()
-    #         }
-    #     )
-
     def test_create_role_2(self):
         result = requests.post("http://127.0.0.1:5002/roles", json={
             "role_id" : 7,
@@ -167,22 +146,6 @@ class Test_staff(unittest.TestCase):
                 "error": "No skill_ids provided in query parameters"
             }
         )
-
-    # def test_create_role_application1(self):
-    #     new_role_application = Role_application(
-    #         role_listing_id=123459,
-    #         staff_id=123456786,
-    #         role_app_status="withdrawn",
-    #         role_app_ts_create="9999-01-01"
-    #     )
-    #     result = requests.post("http://127.0.0.1:5002/role-applications", json=new_role_application.json())
-    #     self.assertEqual(result,
-    #         {
-    #             "code": 201,
-    #             "message": "Role application added successfully",
-    #             "role_application": new_role_application.json()
-    #         }
-    #     )
 
     def test_create_role_application1(self):
         result = requests.post("http://127.0.0.1:5002/role-applications", json={
